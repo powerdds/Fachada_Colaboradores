@@ -17,13 +17,22 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
+import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
+import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
+import io.micrometer.prometheusmetrics.PrometheusConfig;
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class WebApp {
    public static EntityManagerFactory entityManagerFactory;
+    private static final String TOKEN = "ColabToken";
     public static void main(String[] args) {
 
        startEntityManagerFactory();
@@ -31,15 +40,46 @@ public class WebApp {
         var env = System.getenv();
         var objectMapper = createObjectMapper();
         var fachada = new Fachada(entityManagerFactory);
+        ///////////metrics////////////
+        log.info("starting up the server");
 
+        final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+        registry.config().commonTags("app", "metrics-sample");
+
+        // agregamos a nuestro reigstro de métricas todo lo relacionado a infra/tech
+        // de la instancia y JVM
+        try (var jvmGcMetrics = new JvmGcMetrics();
+             var jvmHeapPressureMetrics = new JvmHeapPressureMetrics()) {
+            jvmGcMetrics.bindTo(registry);
+            jvmHeapPressureMetrics.bindTo(registry);
+        }
+        new JvmMemoryMetrics().bindTo(registry);
+        new ProcessorMetrics().bindTo(registry);
+        new FileDescriptorMetrics().bindTo(registry);
+
+        // agregamos métricas custom de nuestro dominio
+        Gauge.builder("metrica_prueba", () -> (int)(Math.random() * 1000))
+                .description("Random number from My-Application.")
+                .strongReference(true)
+                .register(registry);
+        Counter cambiosEstadoCounter = Counter.builder("cambios_estado_colaborador")
+                .description("Total number of viandas added")
+                .register(registry);
+
+        // seteamos el registro dentro de la config de Micrometer
+        final var micrometerPlugin =
+                new MicrometerPlugin(config -> config.registry = registry);
+
+        ////////////////////////////
         fachada.setViandasProxy(new ViandasProxy(objectMapper));
         fachada.setLogisticaProxy(new LogisticaProxy(objectMapper));
 
         var port = Integer.parseInt(env.getOrDefault("PORT", "8080"));
 
-        var app = Javalin.create().start(port);
+        //var app = Javalin.create().start(port);
+        Javalin app = Javalin.create(config -> { config.registerPlugin(micrometerPlugin); }).start(port);
 
-        var colaboradorController = new ColaboradorController(fachada,entityManagerFactory);
+        var colaboradorController = new ColaboradorController(fachada,entityManagerFactory,cambiosEstadoCounter);
 
         app.post("/colaboradores", colaboradorController::agregar);
         app.get("/colaboradores/{id}", colaboradorController::obtener);
@@ -53,6 +93,23 @@ public class WebApp {
         app.put("/formula", colaboradorController::actualizarPuntos);
         app.post("/colaboradores/prueba", colaboradorController::prueba);
         app.delete("/cleanup",colaboradorController::clean);
+        app.get("/metrics",
+                ctx -> {
+                    // chequear el header de authorization y chequear el token bearer
+                    // configurado
+                    var auth = ctx.header("Authorization");
+
+                    if (auth != null && auth.intern() == "Bearer " + TOKEN) {
+                        ctx.contentType("text/plain; version=0.0.4")
+                                .result(registry.scrape());
+                    } else {
+                        // si el token no es el apropiado, devolver error,
+                        // desautorizado
+                        // este paso es necesario para que Grafana online
+                        // permita el acceso
+                        ctx.status(401).json("unauthorized access");
+                    }
+                });
     }
 
     public static ObjectMapper createObjectMapper() {

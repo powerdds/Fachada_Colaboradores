@@ -3,7 +3,6 @@ package ar.edu.utn.dds.k3003.controller;
 import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.dtos.ColaboradorDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
-import ar.edu.utn.dds.k3003.model.Colaborador;
 import ar.edu.utn.dds.k3003.model.PuntosBody;
 import ar.edu.utn.dds.k3003.model.FormaDeColaborar;
 import io.javalin.http.Context;
@@ -11,21 +10,37 @@ import io.javalin.http.HttpStatus;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.TypedQuery;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import io.javalin.micrometer.MicrometerPlugin;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.prometheusmetrics.PrometheusConfig;
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
+
 
 public class ColaboradorController {
     private final Fachada fachada;
     private EntityManagerFactory entityManagerFactory;
     public int contadorCambios = 0;
 
-    public ColaboradorController(Fachada fachada, EntityManagerFactory entityManagerFactory) {
+    public ColaboradorController(Fachada fachada, EntityManagerFactory entityManagerFactory,Counter cambiosEstadoCounter) {
         this.entityManagerFactory = entityManagerFactory;
         this.fachada = fachada;
+        this.cambiosEstadoCounter = cambiosEstadoCounter;
     }
+
+    private final Counter cambiosEstadoCounter;
+    // Metricas
+
+    // Instancia de StatsDClient
+    /*
+    private static final StatsDClient statsd = new NonBlockingStatsDClient(
+            "my.prefix",                  // Prefijo para las métricas
+            "localhost",                  // Dirección del agente Datadog
+            8125           // Puerto donde escucha el agente
+    );*/
 
     public void agregar(Context context) {
         var colaboradorDTO = context.bodyAsClass(ColaboradorDTO.class);
@@ -50,8 +65,15 @@ public class ColaboradorController {
         var id = context.pathParamAsClass("id", Long.class).get();
         var forma = context.bodyAsClass(FormaDeColaborar.class);
             try {
+                final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
                 var colaboradorDTO = this.fachada.modificar(id, forma.getFormas());
-                contadorCambios++;
+                registry.config().commonTags("app", "metrics-sample");
+                Gauge.builder("cambios_estado_colaborador", () -> (int)(1 * 1000))
+                        .description("Random number from My-Application.")
+                        .strongReference(true)
+                        .register(registry);
+                new MicrometerPlugin(config -> config.registry = registry);
+                cambiosEstadoCounter.increment();
                 context.status(HttpStatus.OK);
                 context.result("Se modificó correctamente el colaborador \n"  );
                 context.json(colaboradorDTO);
@@ -178,13 +200,6 @@ public class ColaboradorController {
         context.result("Prueba lista! ");
 
     }
-
-    /*public void contadorCambioEstado(Context context){
-        /*myGauge.set(number);
-        ctx.result("updated number: " + number.toString());
-        log.info("valor gauge cambiado");
-    }
-    */
 
     public void clean(Context context) {
         EntityManager em = entityManagerFactory.createEntityManager();
