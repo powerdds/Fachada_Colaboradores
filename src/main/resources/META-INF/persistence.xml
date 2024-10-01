@@ -11,7 +11,7 @@
 
         <properties>
             <property name="hibernate.default_schema" value="public"/>
-            <property name="hibernate.connection.pool_size" value="1" />
+            <property name="hibernate.connection.pool_size" value="10" />
             <property name="hibernate.archive.autodetection" value="class" />
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.format_sql" value="true" />
