@@ -40,37 +40,6 @@ public class WebApp {
         var app = Javalin.create().start(port);
 
         var colaboradorController = new ColaboradorController(fachada,entityManagerFactory);
-/////////////////
-        log.info("starting up the server");
-
-        final var metricsUtils = new DDMetricsUtils("transferencias");
-        final var registry = metricsUtils.getRegistry();
-
-        // Metricas
-        final var myGauge = registry.gauge("dds.unGauge", new AtomicInteger(0));
-
-        // Config
-        final var micrometerPlugin = new MicrometerPlugin(config -> config.registry = registry);
-
-        final var appMetrics = Javalin.create(config -> {
-            config.registerPlugin(micrometerPlugin);
-        });
-
-        appMetrics.get("/", ctx -> ctx.result("Ok!"));
-
-       appMetrics.get("/number/{number}", ctx -> {
-            var number = ctx.pathParamAsClass("number", Integer.class).get();
-            myGauge.set(number);
-            ctx.result("updated number: " + number.toString());
-            log.info("valor gauge cambiado");
-        });
-
-        //appMetrics.get("/number/{number}", colaboradorController::pruebaMetrics);
-
-        //appMetrics.get("/colaboradores/cambiosEstado", colaboradorController::contadorCambioEstado);
-        appMetrics.start(7070);
-        //////////////
-
 
         app.post("/colaboradores", colaboradorController::agregar);
         app.get("/colaboradores/{id}", colaboradorController::obtener);

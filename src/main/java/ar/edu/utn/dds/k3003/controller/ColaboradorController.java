@@ -184,13 +184,6 @@ public class ColaboradorController {
         ctx.result("updated number: " + number.toString());
         log.info("valor gauge cambiado");
     }
-
-    public void pruebaMetrics(Context context){
-            var number = context.pathParamAsClass("number", Integer.class).get();
-            myGauge.set(number);
-            context.result("updated number: " + number.toString());
-            log.info("valor gauge cambiado");
-    }
     */
 
     public void clean(Context context) {
