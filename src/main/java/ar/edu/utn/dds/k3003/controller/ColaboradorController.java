@@ -23,28 +23,38 @@ import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 public class ColaboradorController {
     private final Fachada fachada;
     private EntityManagerFactory entityManagerFactory;
-    public int contadorCambios = 0;
-
-    public ColaboradorController(Fachada fachada, EntityManagerFactory entityManagerFactory,Counter cambiosEstadoCounter) {
+    private PrometheusMeterRegistry registry;
+    public ColaboradorController(Fachada fachada, EntityManagerFactory entityManagerFactory,PrometheusMeterRegistry registry)
+                                 //Counter cambiosEstadoCounter, Counter colaboradoresCounter)
+    {
         this.entityManagerFactory = entityManagerFactory;
         this.fachada = fachada;
-        this.cambiosEstadoCounter = cambiosEstadoCounter;
+       // this.cambiosEstadoCounter = cambiosEstadoCounter;
+        this.registry = registry;
+        //this.colaboradoresCounter = colaboradoresCounter;
     }
 
-    private final Counter cambiosEstadoCounter;
-    // Metricas
+    /*private Counter cambiosEstadoCounter;
+    private Counter colaboradoresCounter;*/
 
-    // Instancia de StatsDClient
-    /*
-    private static final StatsDClient statsd = new NonBlockingStatsDClient(
-            "my.prefix",                  // Prefijo para las métricas
-            "localhost",                  // Dirección del agente Datadog
-            8125           // Puerto donde escucha el agente
-    );*/
+    Counter colaboradoresCounter = Counter.builder("colaboradores_agregados")
+            .description("Cantidad de colaboradores agregados")
+            .register(registry);
+
+    Counter cambiosEstadoCounter = Counter.builder("cambios_estado_colaborador")
+            .description("Cantidad de cambios de los colaboradores")
+            .register(registry);
+
+    Counter puntosColaboradores = Counter.builder("puntos_totales")
+            .description("Cantidad de cambios de los colaboradores")
+            .register(registry);
 
     public void agregar(Context context) {
         var colaboradorDTO = context.bodyAsClass(ColaboradorDTO.class);
         var colaboradorDTORta = this.fachada.agregar(colaboradorDTO);
+        colaboradoresCounter.increment();
+        //final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+        registry.config().commonTags("app", "metrics-colaborador");
         context.json(colaboradorDTORta);
         context.status(HttpStatus.CREATED);
     }
@@ -65,15 +75,11 @@ public class ColaboradorController {
         var id = context.pathParamAsClass("id", Long.class).get();
         var forma = context.bodyAsClass(FormaDeColaborar.class);
             try {
-                final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
                 var colaboradorDTO = this.fachada.modificar(id, forma.getFormas());
-                registry.config().commonTags("app", "metrics-sample");
-                Gauge.builder("cambios_estado_colaborador", () -> (int)(1 * 1000))
-                        .description("Random number from My-Application.")
-                        .strongReference(true)
-                        .register(registry);
-                new MicrometerPlugin(config -> config.registry = registry);
                 cambiosEstadoCounter.increment();
+                //final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+                registry.config().commonTags("app", "metrics-colaborador");
+                //new MicrometerPlugin(config -> config.registry = registry);
                 context.status(HttpStatus.OK);
                 context.result("Se modificó correctamente el colaborador \n"  );
                 context.json(colaboradorDTO);
@@ -81,6 +87,13 @@ public class ColaboradorController {
                 context.result("No se pudo modificar el colaborador" ); //ex.getLocalizedMessage());
                 context.status(HttpStatus.NOT_ACCEPTABLE);
             }
+       /* final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+        registry.config().commonTags("app", "metrics-sample");
+        Gauge.builder("cambios_estado_colaborador", () -> (int)(1 * 1000))
+                .description("Random number from My-Application.")
+                .strongReference(true)
+                .register(registry);
+        new MicrometerPlugin(config -> config.registry = registry);*/
     }
 
     public void puntosAnioMes(Context context) {
@@ -89,7 +102,10 @@ public class ColaboradorController {
         var mes = context.queryParamAsClass("mes",Integer.class).get();
         try {
             var puntosColaborador = this.fachada.puntosAnioMes(id,mes,anio);
-            context.result("Puntos del colaborador" +id +" :" + puntosColaborador); //PROBAR
+            puntosColaboradores.increment(puntosColaborador);
+            //final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+            registry.config().commonTags("app", "metrics-colaborador");
+            context.result("Puntos del colaborador " +id +" :" + puntosColaborador); //PROBAR
             context.status(HttpStatus.OK);
         } catch (NoSuchElementException ex) {
             context.result(ex.getLocalizedMessage());
@@ -100,7 +116,10 @@ public class ColaboradorController {
         var id = context.pathParamAsClass("id", Long.class).get();
         try {
             var puntosColaborador = this.fachada.puntos(id);
-            context.result("Puntos del colaborador" +id +" :" + puntosColaborador); //PROBAR
+            puntosColaboradores.increment(puntosColaborador);
+            //final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+            registry.config().commonTags("app", "metrics-colaborador");
+            context.result("Puntos del colaborador " +id +" :" + puntosColaborador); //PROBAR
             context.status(HttpStatus.OK);
 
         } catch (NoSuchElementException ex) {

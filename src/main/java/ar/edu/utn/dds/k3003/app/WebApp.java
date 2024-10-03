@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.FunctionCounter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
@@ -44,7 +46,7 @@ public class WebApp {
         log.info("starting up the server");
 
         final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-        registry.config().commonTags("app", "metrics-sample");
+        registry.config().commonTags("app", "metrics-colaborador");
 
         // agregamos a nuestro reigstro de métricas todo lo relacionado a infra/tech
         // de la instancia y JVM
@@ -58,13 +60,12 @@ public class WebApp {
         new FileDescriptorMetrics().bindTo(registry);
 
         // agregamos métricas custom de nuestro dominio
-        Gauge.builder("metrica_prueba", () -> (int)(Math.random() * 1000))
-                .description("Random number from My-Application.")
-                .strongReference(true)
+
+        /*Counter cambiosEstadoCounter = Counter.builder("cambios_estado_colaborador")
+                .description("Cantidad de cambios de los colaboradores")
                 .register(registry);
-        Counter cambiosEstadoCounter = Counter.builder("cambios_estado_colaborador")
-                .description("Total number of viandas added")
-                .register(registry);
+*/
+
 
         // seteamos el registro dentro de la config de Micrometer
         final var micrometerPlugin =
@@ -79,7 +80,7 @@ public class WebApp {
         //var app = Javalin.create().start(port);
         Javalin app = Javalin.create(config -> { config.registerPlugin(micrometerPlugin); }).start(port);
 
-        var colaboradorController = new ColaboradorController(fachada,entityManagerFactory,cambiosEstadoCounter);
+        var colaboradorController = new ColaboradorController(fachada,entityManagerFactory,registry);//,cambiosEstadoCounter,colaboradoresCounter);
 
         app.post("/colaboradores", colaboradorController::agregar);
         app.get("/colaboradores/{id}", colaboradorController::obtener);
@@ -98,10 +99,8 @@ public class WebApp {
                     // chequear el header de authorization y chequear el token bearer
                     // configurado
                     var auth = ctx.header("Authorization");
-
                     if (auth != null && auth.intern() == "Bearer " + TOKEN) {
-                        ctx.contentType("text/plain; version=0.0.4")
-                                .result(registry.scrape());
+                        ctx.contentType("text/plain; version=0.0.4").result(registry.scrape());
                     } else {
                         // si el token no es el apropiado, devolver error,
                         // desautorizado
