@@ -62,9 +62,18 @@ public class WebApp {
                 .description("Random number from My-Application.")
                 .strongReference(true)
                 .register(registry);
-        /*Counter cambiosEstadoCounter = Counter.builder("cambios_estado_colaborador")
-                .description("Total number of viandas added")
-                .register(registry);*/
+
+        Counter colaboradoresCounter = Counter.builder("colaboradores_agregados")
+                .description("Cantidad de colaboradores agregados")
+                .register(registry);
+
+        Counter cambiosEstadoCounter = Counter.builder("cambios_estado_colaborador")
+                .description("Cantidad de cambios de los colaboradores")
+                .register(registry);
+
+        Counter puntosColaboradores = Counter.builder("puntos_totales")
+            .description("Cantidad de cambios de los colaboradores")
+            .register(registry);
         // seteamos el registro dentro de la config de Micrometer
 
         final var micrometerPlugin =
@@ -76,7 +85,7 @@ public class WebApp {
         var port = Integer.parseInt(env.getOrDefault("PORT", "8080"));
 
         //var app = Javalin.create().start(port);
-        var colaboradorController = new ColaboradorController(fachada,entityManagerFactory); //,registry);
+        var colaboradorController = new ColaboradorController(fachada,entityManagerFactory , colaboradoresCounter , cambiosEstadoCounter , puntosColaboradores); //,registry);
 
         Javalin app = Javalin.create(config -> { config.registerPlugin(micrometerPlugin); }).start(port);
         //,cambiosEstadoCounter,colaboradoresCounter);
@@ -86,8 +95,6 @@ public class WebApp {
         app.patch("/colaboradores/{id}",colaboradorController::modificar);
         app.get("/colaboradores/{id}/puntosAnioMes",colaboradorController::puntosAnioMes);
         app.get("/colaboradores/{id}/puntos",colaboradorController::puntos);
-        app.get("/colaboradores/{id}/viandasDistribuidas",colaboradorController::viandasDistribuidas);
-        app.get("/colaboradores/{id}/viandasDonadas",colaboradorController::viandasDonadas);
         app.get("/colaboradores/{id}/puntosViandasDistribuidasAnioMes",colaboradorController::puntosViandasDistribuidas);
         app.get("/colaboradores/{id}/puntosViandasDonadasAnioMes",colaboradorController::puntosViandasDonadas);
         app.put("/formula", colaboradorController::actualizarPuntos);

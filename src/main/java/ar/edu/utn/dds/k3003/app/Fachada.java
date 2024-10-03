@@ -51,18 +51,6 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
     @Override
     public void actualizarPesosPuntos(Double pesosDonados , Double viandasDistribuidas, Double viandasDonadas,
                                       Double tarjetasRepartidas, Double heladerasActivas){
-        //dejar como antes, que se encargue la fachada y testear
-        /*this.puntosCalculo = new PuntosBody(pesosDonados,
-                viandasDistribuidas,
-                viandasDonadas,
-                tarjetasRepartidas,
-                heladerasActivas);
-        this.puntosCalculo.setPesosDonados(pesosDonados);
-        this.puntosCalculo.setViandasDistribuidas(viandasDistribuidas);
-        this.puntosCalculo.setViandasDonadas(viandasDonadas);
-        this.puntosCalculo.setTarjetasRepartidas(tarjetasRepartidas);
-        this.puntosCalculo.setHeladerasActivas(heladerasActivas);
-        puntosRepository.save(puntosCalculo);*/
         pesosDonadosPeso = pesosDonados;
         viandasDistribuidasPeso = viandasDistribuidas;
         viandasDonadasPeso =viandasDonadas;
