@@ -33,11 +33,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class WebApp {
-   public static EntityManagerFactory entityManagerFactory;
+    public static EntityManagerFactory entityManagerFactory;
     private static final String TOKEN = "ColabToken";
     public static void main(String[] args) {
 
-       startEntityManagerFactory();
+        startEntityManagerFactory();
 
         var env = System.getenv();
         var objectMapper = createObjectMapper();
@@ -47,7 +47,6 @@ public class WebApp {
 
         final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
         registry.config().commonTags("app", "metrics-colaborador");
-
         // agregamos a nuestro reigstro de métricas todo lo relacionado a infra/tech
         // de la instancia y JVM
         try (var jvmGcMetrics = new JvmGcMetrics();
@@ -58,19 +57,18 @@ public class WebApp {
         new JvmMemoryMetrics().bindTo(registry);
         new ProcessorMetrics().bindTo(registry);
         new FileDescriptorMetrics().bindTo(registry);
-
         // agregamos métricas custom de nuestro dominio
-
-        /*Counter cambiosEstadoCounter = Counter.builder("cambios_estado_colaborador")
-                .description("Cantidad de cambios de los colaboradores")
+        Gauge.builder("metrica_prueba", () -> (int)(Math.random() * 1000))
+                .description("Random number from My-Application.")
+                .strongReference(true)
                 .register(registry);
-*/
-
-
+        /*Counter cambiosEstadoCounter = Counter.builder("cambios_estado_colaborador")
+                .description("Total number of viandas added")
+                .register(registry);*/
         // seteamos el registro dentro de la config de Micrometer
+
         final var micrometerPlugin =
                 new MicrometerPlugin(config -> config.registry = registry);
-
         ////////////////////////////
         fachada.setViandasProxy(new ViandasProxy(objectMapper));
         fachada.setLogisticaProxy(new LogisticaProxy(objectMapper));
@@ -78,9 +76,10 @@ public class WebApp {
         var port = Integer.parseInt(env.getOrDefault("PORT", "8080"));
 
         //var app = Javalin.create().start(port);
-        Javalin app = Javalin.create(config -> { config.registerPlugin(micrometerPlugin); }).start(port);
+        var colaboradorController = new ColaboradorController(fachada,entityManagerFactory); //,registry);
 
-        var colaboradorController = new ColaboradorController(fachada,entityManagerFactory,registry);//,cambiosEstadoCounter,colaboradoresCounter);
+        Javalin app = Javalin.create(config -> { config.registerPlugin(micrometerPlugin); }).start(port);
+        //,cambiosEstadoCounter,colaboradoresCounter);
 
         app.post("/colaboradores", colaboradorController::agregar);
         app.get("/colaboradores/{id}", colaboradorController::obtener);
