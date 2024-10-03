@@ -183,32 +183,19 @@ public class ColaboradorController {
     }
 
     public void clean(Context context) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        /*em.getTransaction().begin();
-        try {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        em.getTransaction().begin();
+        try{
             em.createQuery("DELETE FROM Colaborador").executeUpdate();
-            em.createNativeQuery("ALTER SEQUENCE id RESTART WITH 1").executeUpdate();
             em.getTransaction().commit();
-        } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()) em.getTransaction().rollback();
-            throw e;
-        } finally {
-            em.close();
-        }*/
-        /*em.getTransaction().begin();
-        em.createQuery("DELETE FROM Colaborador ");
-        em.getTransaction().commit();*/
-        try {
-            entityManager.createQuery("DELETE FROM Colaborador").executeUpdate();
-            entityManager.getTransaction().commit();
             context.result("Se borraron los datos correctamente.");
-        } catch (RuntimeException e) {
-            entityManager.getTransaction().rollback();
+        }catch(RuntimeException e){
+            if(em.getTransaction().isActive()) em.getTransaction().rollback();
             context.result("Error al borrar datos.");
             context.status(500);
             throw e;
-        } finally {
-            entityManager.close();
+        } finally{
+            em.close();
         }
     }
 
