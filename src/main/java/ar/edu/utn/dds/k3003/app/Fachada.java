@@ -67,11 +67,11 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
                 ;}
 
     public Long viandasDonadas(Long colaboradorId){
-        List<ViandaDTO> viandas =  fachadaViandas.viandasDeColaborador(colaboradorId,9,2024);
+        List<ViandaDTO> viandas =  fachadaViandas.viandasDeColaborador(colaboradorId,10,2024);
         return (long) viandas.size();
     }
     public Long viandasDistribuidas(Long colaboradorId){
-        List<TrasladoDTO> traslados =  fachadaLogistica.trasladosDeColaborador(colaboradorId,9,2024);
+        List<TrasladoDTO> traslados =  fachadaLogistica.trasladosDeColaborador(colaboradorId,10,2024);
         return (long) traslados.size();
     }
     public Double puntosAnioMes(Long colaboradorId, Integer mes, Integer anio){

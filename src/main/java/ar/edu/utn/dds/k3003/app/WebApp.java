@@ -58,10 +58,10 @@ public class WebApp {
         new ProcessorMetrics().bindTo(registry);
         new FileDescriptorMetrics().bindTo(registry);
         // agregamos métricas custom de nuestro dominio
-        Gauge.builder("metrica_prueba", () -> (int)(Math.random() * 1000))
+        /*Gauge.builder("metrica_prueba", () -> (int)(Math.random() * 1000))
                 .description("Random number from My-Application.")
                 .strongReference(true)
-                .register(registry);
+                .register(registry);*/
 
         Counter colaboradoresCounter = Counter.builder("colaboradores_agregados")
                 .description("Cantidad de colaboradores agregados")
@@ -71,8 +71,8 @@ public class WebApp {
                 .description("Cantidad de cambios de los colaboradores")
                 .register(registry);
 
-        Counter puntosColaboradores = Counter.builder("puntos_totales")
-            .description("Cantidad de cambios de los colaboradores")
+        Counter comunicacionFachada = Counter.builder("comunicacion_modulos")
+            .description("Cantidad de veces que la app se comunica con cada módulo")
             .register(registry);
         // seteamos el registro dentro de la config de Micrometer
 
@@ -85,7 +85,7 @@ public class WebApp {
         var port = Integer.parseInt(env.getOrDefault("PORT", "8080"));
 
         //var app = Javalin.create().start(port);
-        var colaboradorController = new ColaboradorController(fachada,entityManagerFactory , colaboradoresCounter , cambiosEstadoCounter , puntosColaboradores); //,registry);
+        var colaboradorController = new ColaboradorController(fachada,entityManagerFactory , colaboradoresCounter , cambiosEstadoCounter , comunicacionFachada);
 
         Javalin app = Javalin.create(config -> { config.registerPlugin(micrometerPlugin); }).start(port);
         //,cambiosEstadoCounter,colaboradoresCounter);
@@ -93,10 +93,9 @@ public class WebApp {
         app.post("/colaboradores", colaboradorController::agregar);
         app.get("/colaboradores/{id}", colaboradorController::obtener);
         app.patch("/colaboradores/{id}",colaboradorController::modificar);
-        app.get("/colaboradores/{id}/puntosAnioMes",colaboradorController::puntosAnioMes);
         app.get("/colaboradores/{id}/puntos",colaboradorController::puntos);
-        app.get("/colaboradores/{id}/puntosViandasDistribuidasAnioMes",colaboradorController::puntosViandasDistribuidas);
-        app.get("/colaboradores/{id}/puntosViandasDonadasAnioMes",colaboradorController::puntosViandasDonadas);
+        app.get("/colaboradores/{id}/puntosViandasDistribuidas",colaboradorController::puntosViandasDistribuidas);
+        app.get("/colaboradores/{id}/puntosViandasDonadas",colaboradorController::puntosViandasDonadas);
         app.put("/formula", colaboradorController::actualizarPuntos);
         app.post("/colaboradores/prueba", colaboradorController::prueba);
         app.delete("/cleanup",colaboradorController::clean);
