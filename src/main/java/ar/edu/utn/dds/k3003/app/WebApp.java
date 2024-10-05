@@ -71,9 +71,9 @@ public class WebApp {
                 .description("Cantidad de cambios de los colaboradores")
                 .register(registry);
 
-        /*Counter comunicacionFachada = Counter.builder("comunicacion_modulos")
-            .description("Cantidad de veces que la app se comunica con cada módulo")
-            .register(registry);*/
+        Counter puntosColaboradores = Counter.builder("puntos_totales")
+                .description("Cantidad de cambios de los colaboradores")
+                .register(registry);
         // seteamos el registro dentro de la config de Micrometer
 
         final var micrometerPlugin =
@@ -85,7 +85,7 @@ public class WebApp {
         var port = Integer.parseInt(env.getOrDefault("PORT", "8080"));
 
         //var app = Javalin.create().start(port);
-        var colaboradorController = new ColaboradorController(fachada,entityManagerFactory , colaboradoresCounter , cambiosEstadoCounter);// , comunicacionFachada);
+        var colaboradorController = new ColaboradorController(fachada,entityManagerFactory , colaboradoresCounter , cambiosEstadoCounter, puntosColaboradores);
 
         Javalin app = Javalin.create(config -> { config.registerPlugin(micrometerPlugin); }).start(port);
         //,cambiosEstadoCounter,colaboradoresCounter);
