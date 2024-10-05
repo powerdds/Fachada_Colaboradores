@@ -60,6 +60,16 @@ public class ColaboradorController {
             context.status(HttpStatus.NOT_FOUND);
         }
     }
+    public void obtenerColaboradores(Context context) {
+        try {
+            var colaboradorDTO = this.fachada.colaboradorRepository.list();
+            context.status(HttpStatus.OK);
+            context.json(colaboradorDTO);
+        } catch (NoSuchElementException ex) {
+            context.result("Colaboradores no encontrados" + ex.getLocalizedMessage());
+            context.status(HttpStatus.NOT_FOUND);
+        }
+    }
 
     public void modificar(Context context) {
         var id = context.pathParamAsClass("id", Long.class).get();

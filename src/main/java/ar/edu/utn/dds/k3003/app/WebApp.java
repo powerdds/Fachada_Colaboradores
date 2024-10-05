@@ -92,6 +92,7 @@ public class WebApp {
 
         app.get("/", context -> {context.result("Bienvenido al módulo de Colaboradores!"); } );
         app.post("/colaboradores", colaboradorController::agregar);
+        app.get("/colaboradores", colaboradorController::obtenerColaboradores);
         app.get("/colaboradores/{id}", colaboradorController::obtener);
         app.patch("/colaboradores/{id}",colaboradorController::modificar);
         app.get("/colaboradores/{id}/puntos",colaboradorController::puntos);

@@ -65,4 +65,11 @@ public class ColaboradorRepository {
         em.getTransaction().commit();
         em.close();
     }
+    public List<Colaborador> list(){
+        EntityManager em = entityManagerFactory.createEntityManager();
+        List<Colaborador> colaboradores = em.createQuery("from Colaborador", Colaborador.class).getResultList();
+
+        return colaboradores;
+    }
 }
+
