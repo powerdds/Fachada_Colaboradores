@@ -26,17 +26,17 @@ public class ColaboradorController {
     private EntityManagerFactory entityManagerFactory;
 
     public ColaboradorController(Fachada fachada, EntityManagerFactory entityManagerFactory,
-                                 Counter colaboradoresCounter, Counter cambiosEstadoCounter, Counter comunicacionFachadaCounter) {
+                                 Counter colaboradoresCounter, Counter cambiosEstadoCounter){// Counter comunicacionFachadaCounter) {
         this.entityManagerFactory = entityManagerFactory;
         this.fachada = fachada;
         this.cambiosEstadoCounter = cambiosEstadoCounter;
         this.colaboradoresCounter = colaboradoresCounter;
-        this.comunicacionFachadaCounter = comunicacionFachadaCounter;
+        //this.comunicacionFachadaCounter = comunicacionFachadaCounter;
     }
 
     private Counter cambiosEstadoCounter;
     private Counter colaboradoresCounter;
-    private Counter comunicacionFachadaCounter;
+    //private Counter comunicacionFachadaCounter;
 
 
     public void agregar(Context context) {
@@ -100,9 +100,9 @@ public class ColaboradorController {
         var id = context.pathParamAsClass("id", Long.class).get();
         try {
             var puntosColaborador = this.fachada.puntos(id);
-            comunicacionFachadaCounter.increment();
+            /*comunicacionFachadaCounter.increment();
             final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-            registry.config().commonTags("app", "metrics-colaborador");
+            registry.config().commonTags("app", "metrics-colaborador");*/
             context.result("Puntos del colaborador " + id + " :" + puntosColaborador); //PROBAR
             context.status(HttpStatus.OK);
 
@@ -116,9 +116,9 @@ public class ColaboradorController {
         var id = context.pathParamAsClass("id", Long.class).get();
         try {
             var viandasDonadas = this.fachada.viandasDonadas(id) * this.fachada.viandasDonadasPeso;
-            comunicacionFachadaCounter.increment();
+            /*comunicacionFachadaCounter.increment();
             final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-            registry.config().commonTags("app", "metrics-colaborador");
+            registry.config().commonTags("app", "metrics-colaborador");*/
             context.result("Puntos de viandas donadas: " + viandasDonadas);
             context.status(HttpStatus.OK);
         } catch (NoSuchElementException ex) {
@@ -131,9 +131,9 @@ public class ColaboradorController {
         var id = context.pathParamAsClass("id", Long.class).get();
         try {
             var viandasDistribuidas = this.fachada.viandasDistribuidas(id) * this.fachada.viandasDistribuidasPeso;
-            comunicacionFachadaCounter.increment();
+            /*comunicacionFachadaCounter.increment();
             final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-            registry.config().commonTags("app", "metrics-colaborador");
+            registry.config().commonTags("app", "metrics-colaborador");*/
             context.result("Puntos de viandas distribuidas: " + viandasDistribuidas);
             context.status(HttpStatus.OK);
         } catch (NoSuchElementException ex) {
