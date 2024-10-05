@@ -2,8 +2,10 @@
 # Dubini, Aylen Yazmin
 
 ```
-# Completar con dirección donde despĺegaron en Render.com
-https://two024-tp-entrega-3-ayludubini.onrender.com
+Render de la aplicación
+https://fachada-colaboradores.onrender.com
+Dashboard de métricas
+https://adubini.grafana.net/d/metrics-endpoint-overview/metrics-endpoint-overview?from=now-5m&to=now&var-datasource=grafanacloud-prom&var-scrape_job=$__all&var-job=$__all&refresh=30s
 ```
 
 Template para TP DDS 2024 - Entrega 3
