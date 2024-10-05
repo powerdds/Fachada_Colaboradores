@@ -58,10 +58,10 @@ public class WebApp {
         new ProcessorMetrics().bindTo(registry);
         new FileDescriptorMetrics().bindTo(registry);
         // agregamos métricas custom de nuestro dominio
-        /*Gauge.builder("metrica_prueba", () -> (int)(Math.random() * 1000))
+        Gauge.builder("metrica_prueba", () -> (int)(Math.random() * 1000))
                 .description("Random number from My-Application.")
                 .strongReference(true)
-                .register(registry);*/
+                .register(registry);
 
         Counter colaboradoresCounter = Counter.builder("colaboradores_agregados")
                 .description("Cantidad de colaboradores agregados")
@@ -90,6 +90,7 @@ public class WebApp {
         Javalin app = Javalin.create(config -> { config.registerPlugin(micrometerPlugin); }).start(port);
         //,cambiosEstadoCounter,colaboradoresCounter);
 
+        app.get("/", context -> {context.result("Bienvenido al módulo de Colaboradores!"); } );
         app.post("/colaboradores", colaboradorController::agregar);
         app.get("/colaboradores/{id}", colaboradorController::obtener);
         app.patch("/colaboradores/{id}",colaboradorController::modificar);
