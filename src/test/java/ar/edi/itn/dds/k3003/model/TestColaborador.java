@@ -65,7 +65,7 @@ public class TestColaborador {
 
     @Test
     public void puntosConViandasTest(){
-        fColaboradores.actualizarPesosPuntos(0.5, 1.0, 1.5, 2.0, 5.0);
+        fColaboradores.actualizarPesosPuntos(0.5, 1.0, 1.5, 2.0);
         var trasladoDTO = new TrasladoDTO("qrV", 2, 3);
         var viandaDTO = new ViandaDTO("codQ", LocalDateTime.now(), EstadoViandaEnum.EN_TRASLADO, colaborador.getId(), 20);
         when(logistica.trasladosDeColaborador(colaborador.getId(), 10, 2024)).thenReturn(List.of(trasladoDTO));
@@ -76,13 +76,13 @@ public class TestColaborador {
 
     @Test
     public void actualizarPesosPuntosTest(){
-        fColaboradores.actualizarPesosPuntos(0.5, 1.0, 1.5, 2.0, 5.0);
+        fColaboradores.actualizarPesosPuntos(0.5, 1.0, 1.5, 2.0);
         var trasladoDTO = new TrasladoDTO("qrV", 2, 3);
         var viandaDTO = new ViandaDTO("codQ", LocalDateTime.now(), EstadoViandaEnum.EN_TRASLADO, colaborador.getId(), 20);
         when(logistica.trasladosDeColaborador(colaborador.getId(), 1, 2024)).thenReturn(List.of(trasladoDTO));
         when(viandas.viandasDeColaborador(colaborador.getId(), 1, 2024)).thenReturn(List.of(viandaDTO));
         Double puntos = fColaboradores.puntos(colaborador.getId());
-        fColaboradores.actualizarPesosPuntos(0.0, 2.0, 2.0, 0.0, 0.0);
+        fColaboradores.actualizarPesosPuntos(0.0, 2.0, 2.0, 0.0);
         assertNotEquals(puntos , fColaboradores.puntos(colaborador.getId()) , "Se actualizaron los puntos");
     }
 

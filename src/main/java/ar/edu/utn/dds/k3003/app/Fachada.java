@@ -59,6 +59,13 @@ public class Fachada {
         heladerasReparadasPeso = heladerasReparadas;
     }
 
+    public Double puntos(Long colaboradorId){
+        return viandasDistribuidas(colaboradorId,9,2024) * viandasDistribuidasPeso +
+                viandasDonadas(colaboradorId ,9,2024) * viandasDonadasPeso
+                /* + pesosDonados(colaboradorId) * pesosDonadosPeso +
+                heladerasReparadas(colaboradorId) * heladerasReparadasPeso*/
+                ;}
+
     public Double puntosAnioMes(Long colaboradorId, Integer mes, Integer anio){
         return viandasDistribuidas(colaboradorId,mes,anio) * viandasDistribuidasPeso +
                 viandasDonadas(colaboradorId,mes,anio) * viandasDonadasPeso
