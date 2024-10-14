@@ -1,6 +1,7 @@
 package ar.edu.utn.dds.k3003.model;
 
-import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
+//import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
+import ar.edu.utn.dds.k3003.model.FormaDeColaborarEnum;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import java.util.Arrays;

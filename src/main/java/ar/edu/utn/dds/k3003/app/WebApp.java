@@ -72,7 +72,13 @@ public class WebApp {
                 .register(registry);
 
         Counter puntosColaboradores = Counter.builder("puntos_totales")
-                .description("Cantidad de cambios de los colaboradores")
+                .description("Puntos totales calculados de los colaboradores")
+                .register(registry);
+
+        //Gauge puntosPromedio = Gauge.builder("puntos_promedio", ColaboradorController::promedio) //probar
+        Gauge puntosPromedio = Gauge.builder("puntos_promedio", ()-> puntosColaboradores.count() / colaboradoresCounter.count())
+                .description("Puntos promedio calculados de los colaboradores")
+                .strongReference(true)
                 .register(registry);
         // seteamos el registro dentro de la config de Micrometer
 
@@ -95,9 +101,9 @@ public class WebApp {
         app.get("/colaboradores", colaboradorController::obtenerColaboradores);
         app.get("/colaboradores/{id}", colaboradorController::obtener);
         app.patch("/colaboradores/{id}",colaboradorController::modificar);
-        app.get("/colaboradores/{id}/puntos",colaboradorController::puntos);
-        app.get("/colaboradores/{id}/puntosViandasDistribuidas",colaboradorController::puntosViandasDistribuidas);
-        app.get("/colaboradores/{id}/puntosViandasDonadas",colaboradorController::puntosViandasDonadas);
+        app.get("/colaboradores/{id}/puntosAnioMes",colaboradorController::puntosAnioMes);
+        app.get("/colaboradores/{id}/puntosViandasDistribuidasAnioMes",colaboradorController::puntosViandasDistribuidasAnioMes);
+        app.get("/colaboradores/{id}/puntosViandasDonadasAnioMes",colaboradorController::puntosViandasDonadasAnioMes);
         app.put("/formula", colaboradorController::actualizarPuntos);
         app.post("/colaboradores/prueba", colaboradorController::prueba);
         app.delete("/cleanup",colaboradorController::clean);

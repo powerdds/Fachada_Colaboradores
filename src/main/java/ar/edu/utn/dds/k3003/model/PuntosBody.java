@@ -10,20 +10,18 @@ public class PuntosBody{
     private Double pesosDonados;
     private Double viandasDistribuidas;
     private Double viandasDonadas;
-    private Double tarjetasRepartidas;
-    private Double heladerasActivas;
+    private Double heladerasReparadas;
 
     protected PuntosBody() {
         super();
     }
 
     public PuntosBody(Double pesosDonados , Double viandasDistribuidas, Double viandasDonadas,
-                      Double tarjetasRepartidas, Double heladerasActivas) {
+                      Double heladerasReparadas) {
         this.pesosDonados = pesosDonados;
         this.viandasDistribuidas = viandasDistribuidas;
         this.viandasDonadas =viandasDonadas;
-        this.tarjetasRepartidas = tarjetasRepartidas;
-        this.heladerasActivas = heladerasActivas;
+        this.heladerasReparadas = heladerasReparadas;
     }
 }
 

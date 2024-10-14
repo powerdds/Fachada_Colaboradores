@@ -1,6 +1,6 @@
 package ar.edu.utn.dds.k3003.persist;
 
-import ar.edu.utn.dds.k3003.facades.dtos.ColaboradorDTO;
+import ar.edu.utn.dds.k3003.model.DTOs.ColaboradorDTO;
 import ar.edu.utn.dds.k3003.model.Colaborador;
 
 import javax.persistence.EntityManager;
@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class ColaboradorRepository {
-    private EntityManagerFactory entityManagerFactory;
+   private EntityManagerFactory entityManagerFactory;
 
    private static AtomicLong seqId = new AtomicLong();
 

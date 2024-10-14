@@ -11,7 +11,7 @@ import javax.persistence.Persistence;
 
 import java.util.List;
 import ar.edu.utn.dds.k3003.persist.ColaboradorRepository;
-import static ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum.DONADOR;
+import static ar.edu.utn.dds.k3003.model.FormaDeColaborarEnum.DONADORDINERO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestPersistencia {
@@ -32,9 +32,9 @@ public class TestPersistencia {
 // vacío, para ver que levante el ORM
         }
 
-    @Test
+   @Test
     public void testGuardarYRecuperarDoc() throws Exception {
-        Colaborador col1 = new Colaborador("pepe", List.of(DONADOR));
+        Colaborador col1 = new Colaborador("pepe", List.of(DONADORDINERO));
         entityManager.getTransaction().begin();
         entityManager.persist(col1);
         entityManager.getTransaction().commit();
@@ -48,7 +48,7 @@ public class TestPersistencia {
     @Test
     public void testGuardarYRecuperarColaborador() throws Exception {
 // Pre condiciones: se supone que el revisor esta dado de alta ANTES de cargar el lote
-        Colaborador colaborador= new Colaborador("Jose" , List.of(DONADOR));
+        Colaborador colaborador= new Colaborador("Jose" , List.of(DONADORDINERO));
 // Notar que volvemos a inicializar la persistencia
         entityManager = entityManagerFactory.createEntityManager();
         ColaboradorRepository colaboradorRepo= new ColaboradorRepository(entityManagerFactory);

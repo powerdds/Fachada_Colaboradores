@@ -1,5 +1,5 @@
 package ar.edu.utn.dds.k3003.model;
-import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
+import ar.edu.utn.dds.k3003.model.FormaDeColaborarEnum;
 import java.util.List;
 
 public class FormaDeColaborar {

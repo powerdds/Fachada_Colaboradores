@@ -1,10 +1,11 @@
 package ar.edu.utn.dds.k3003.controller;
 
 import ar.edu.utn.dds.k3003.app.Fachada;
-import ar.edu.utn.dds.k3003.facades.dtos.ColaboradorDTO;
-import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
+import ar.edu.utn.dds.k3003.model.Colaborador;
 import ar.edu.utn.dds.k3003.model.PuntosBody;
 import ar.edu.utn.dds.k3003.model.FormaDeColaborar;
+import ar.edu.utn.dds.k3003.model.FormaDeColaborarEnum;
+import ar.edu.utn.dds.k3003.model.DTOs.ColaboradorDTO;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 
@@ -12,10 +13,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.Supplier;
 
-import io.javalin.micrometer.MicrometerPlugin;
 import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Gauge;
 import io.micrometer.prometheusmetrics.PrometheusConfig;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 
@@ -38,6 +38,10 @@ public class ColaboradorController {
     private Counter colaboradoresCounter;
     private Counter puntosColaboradores;
 
+
+    /*public Double promedio(){
+        return this.puntosColaboradores.count() / colaboradoresCounter.count();
+    }*/
 
     public void agregar(Context context) {
         var colaboradorDTO = context.bodyAsClass(ColaboradorDTO.class);
@@ -89,46 +93,32 @@ public class ColaboradorController {
         }
     }
 
-    /*public void puntosAnioMes(Context context) {
+    public void puntosAnioMes(Context context) {
         var id = context.pathParamAsClass("id", Long.class).get();
         var anio = context.queryParamAsClass("anio", Integer.class).get();
         var mes = context.queryParamAsClass("mes", Integer.class).get();
+        Colaborador colaborador = this.fachada.colaboradorRepository.findById(id);
         try {
             var puntosColaborador = this.fachada.puntosAnioMes(id, mes, anio);
-            puntosColaboradores.increment(puntosColaborador);
-            final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-            registry.config().commonTags("app", "metrics-colaborador");
-            context.result("Puntos del colaborador " + id + " :" + puntosColaborador); //PROBAR
+            if(!colaborador.getPuntosCalculados()) {
+                puntosColaboradores.increment(puntosColaborador);
+                final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+                registry.config().commonTags("app", "metrics-colaborador");
+                colaborador.setPuntosCalculados(true);
+            }
+            context.result("Puntos del colaborador " + id + " :" + puntosColaborador);
             context.status(HttpStatus.OK);
-        } catch (NoSuchElementException ex) {
-            context.result("No se pudieron obtener los puntos del colaborador " + ex.getLocalizedMessage());
-            context.status(HttpStatus.NOT_ACCEPTABLE);
-        }
-    }*/
-
-    public void puntos(Context context) {
-        var id = context.pathParamAsClass("id", Long.class).get();
-        try {
-            var puntosColaborador = this.fachada.puntos(id);
-            puntosColaboradores.increment();
-            final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-            registry.config().commonTags("app", "metrics-colaborador");
-            context.result("Puntos del colaborador " + id + " :" + puntosColaborador); //PROBAR
-            context.status(HttpStatus.OK);
-
         } catch (NoSuchElementException ex) {
             context.result("No se pudieron obtener los puntos del colaborador " + ex.getLocalizedMessage());
             context.status(HttpStatus.NOT_ACCEPTABLE);
         }
     }
-
-    public void puntosViandasDonadas(Context context) {
+    public void puntosViandasDonadasAnioMes(Context context) {
         var id = context.pathParamAsClass("id", Long.class).get();
+        var anio = context.queryParamAsClass("anio", Integer.class).get();
+        var mes = context.queryParamAsClass("mes", Integer.class).get();
         try {
-            var viandasDonadas = this.fachada.viandasDonadas(id) * this.fachada.viandasDonadasPeso;
-            puntosColaboradores.increment();
-            final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-            registry.config().commonTags("app", "metrics-colaborador");
+            var viandasDonadas = this.fachada.viandasDonadas(id,mes,anio) * this.fachada.viandasDonadasPeso;
             context.result("Puntos de viandas donadas: " + viandasDonadas);
             context.status(HttpStatus.OK);
         } catch (NoSuchElementException ex) {
@@ -137,13 +127,12 @@ public class ColaboradorController {
         }
     }
 
-    public void puntosViandasDistribuidas(Context context) {
+    public void puntosViandasDistribuidasAnioMes(Context context) {
         var id = context.pathParamAsClass("id", Long.class).get();
+        var anio = context.queryParamAsClass("anio", Integer.class).get();
+        var mes = context.queryParamAsClass("mes", Integer.class).get();
         try {
-            var viandasDistribuidas = this.fachada.viandasDistribuidas(id) * this.fachada.viandasDistribuidasPeso;
-            puntosColaboradores.increment();
-            final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-            registry.config().commonTags("app", "metrics-colaborador");
+            var viandasDistribuidas = this.fachada.viandasDistribuidas(id,mes,anio) * this.fachada.viandasDistribuidasPeso;
             context.result("Puntos de viandas distribuidas: " + viandasDistribuidas);
             context.status(HttpStatus.OK);
         } catch (NoSuchElementException ex) {
@@ -157,20 +146,17 @@ public class ColaboradorController {
         Double pesosDonados = puntos.getPesosDonados();
         Double viandasDistribuidas = puntos.getViandasDistribuidas();
         Double viandasDonadas = puntos.getViandasDonadas();
-        Double tarjetasRepartidas = puntos.getTarjetasRepartidas();
-        Double heladerasActivas = puntos.getHeladerasActivas();
+        Double heladerasReparadas = puntos.getHeladerasReparadas();
         try {
             this.fachada.actualizarPesosPuntos(pesosDonados,
                     viandasDistribuidas,
                     viandasDonadas,
-                    tarjetasRepartidas,
-                    heladerasActivas);
+                    heladerasReparadas);
             context.result("Puntos actualizados: \n"
                     + " peso Pesos = " + pesosDonados + "\n"
                     + " peso Viandas Distribuidas = " + viandasDistribuidas + "\n"
                     + " peso Viandas Donadas = " + viandasDonadas + "\n"
-                    + " peso Tarjetas Repartidas = " + tarjetasRepartidas + "\n"
-                    + " peso Heladeras Activas = " + heladerasActivas)
+                    + " peso Heladeras Reparadas = " + heladerasReparadas)
             ;
             context.status(HttpStatus.OK);
         } catch (NoSuchElementException ex) {
@@ -180,17 +166,17 @@ public class ColaboradorController {
     }
 
     public void prueba(Context context) {
-        ColaboradorDTO colaborador1 = new ColaboradorDTO("Pepe", List.of(FormaDeColaborarEnum.DONADOR));
+        ColaboradorDTO colaborador1 = new ColaboradorDTO("Pepe", List.of(FormaDeColaborarEnum.DONADORDINERO));
         ColaboradorDTO colaborador2 = new ColaboradorDTO("Jose", List.of(FormaDeColaborarEnum.TRANSPORTADOR));
-        ColaboradorDTO colaborador3 = new ColaboradorDTO("Laura", List.of(FormaDeColaborarEnum.DONADOR));
-        ColaboradorDTO colaborador4 = new ColaboradorDTO("Lolo", List.of(FormaDeColaborarEnum.DONADOR ));
+        ColaboradorDTO colaborador3 = new ColaboradorDTO("Laura", List.of(FormaDeColaborarEnum.DONADORVIANDA));
+        ColaboradorDTO colaborador4 = new ColaboradorDTO("Lolo", List.of(FormaDeColaborarEnum.TECNICO));
         ColaboradorDTO colaborador5 = new ColaboradorDTO("Maria", List.of(FormaDeColaborarEnum.TRANSPORTADOR));
         this.fachada.agregar(colaborador1);
         this.fachada.agregar(colaborador2);
         this.fachada.agregar(colaborador3);
         this.fachada.agregar(colaborador4);
         this.fachada.agregar(colaborador5);
-        this.fachada.actualizarPesosPuntos(0.5, 1.0, 1.5, 2.0, 5.0);
+        this.fachada.actualizarPesosPuntos(0.5, 1.0, 1.5, 2.0);
         final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
         colaboradoresCounter.increment(5);
         registry.config().commonTags("app", "metrics-colaborador");

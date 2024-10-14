@@ -5,6 +5,8 @@ import ar.edu.utn.dds.k3003.facades.FachadaColaboradores;
 import ar.edu.utn.dds.k3003.facades.FachadaLogistica;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.*;
+import ar.edu.utn.dds.k3003.model.DTOs.ColaboradorDTO;
+import ar.edu.utn.dds.k3003.model.FormaDeColaborarEnum;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,18 +31,18 @@ public class TestColaborador {
     List<FormaDeColaborarEnum> formaDeColaborar;
     @Mock FachadaLogistica logistica;
     @Mock FachadaViandas viandas;
+    @Mock FachadaViandas heladeras;
     String nombre1;
-    public static EntityManagerFactory entityManagerFactory; //agregado
+    static EntityManagerFactory entityManagerFactory; //agregado
     @BeforeEach
     void setUp() {
+        entityManagerFactory = Persistence.createEntityManagerFactory("colaboradoresdb");
         fColaboradores = new Fachada(entityManagerFactory); // this.instance();
-        formaDeColaborar = List.of(FormaDeColaborarEnum.DONADOR);
+        formaDeColaborar = List.of(FormaDeColaborarEnum.DONADORDINERO);
         colaborador = new ColaboradorDTO("Juana" , formaDeColaborar);
         nombre1 = "Juan";
-        //logistica = new FachadaLogistica();
         fColaboradores.setLogisticaProxy(logistica);
-        fColaboradores.setViandasProxy(viandas);
-    }
+        fColaboradores.setViandasProxy(viandas);    }
 
     @Test
     public void agregarColaboradorTest(){
@@ -65,8 +68,8 @@ public class TestColaborador {
         fColaboradores.actualizarPesosPuntos(0.5, 1.0, 1.5, 2.0, 5.0);
         var trasladoDTO = new TrasladoDTO("qrV", 2, 3);
         var viandaDTO = new ViandaDTO("codQ", LocalDateTime.now(), EstadoViandaEnum.EN_TRASLADO, colaborador.getId(), 20);
-        when(logistica.trasladosDeColaborador(colaborador.getId(), 1, 2024)).thenReturn(List.of(trasladoDTO));
-        when(viandas.viandasDeColaborador(colaborador.getId(), 1, 2024)).thenReturn(List.of(viandaDTO));
+        when(logistica.trasladosDeColaborador(colaborador.getId(), 10, 2024)).thenReturn(List.of(trasladoDTO));
+        when(viandas.viandasDeColaborador(colaborador.getId(), 10, 2024)).thenReturn(List.of(viandaDTO));
         Double puntos = fColaboradores.puntos(colaborador.getId());
         assertTrue(puntos > 0 ,"El colaborador dono y transporto viandas" );
     }
