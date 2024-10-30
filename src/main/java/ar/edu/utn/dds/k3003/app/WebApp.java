@@ -1,4 +1,5 @@
 package ar.edu.utn.dds.k3003.app;
+import ar.edu.utn.dds.k3003.clients.HeladeraProxy;
 import ar.edu.utn.dds.k3003.clients.LogisticaProxy;
 import ar.edu.utn.dds.k3003.clients.ViandasProxy;
 import ar.edu.utn.dds.k3003.controller.ColaboradorController;
@@ -75,7 +76,6 @@ public class WebApp {
                 .description("Puntos totales calculados de los colaboradores")
                 .register(registry);
 
-        //Gauge puntosPromedio = Gauge.builder("puntos_promedio", ColaboradorController::promedio) //probar
         Gauge puntosPromedio = Gauge.builder("puntos_promedio", ()-> puntosColaboradores.count() / colaboradoresCounter.count())
                 .description("Puntos promedio calculados de los colaboradores")
                 .strongReference(true)
@@ -87,6 +87,7 @@ public class WebApp {
         ////////////////////////////
         fachada.setViandasProxy(new ViandasProxy(objectMapper));
         fachada.setLogisticaProxy(new LogisticaProxy(objectMapper));
+        fachada.setHeladerasProxy(new HeladeraProxy(objectMapper));
 
         var port = Integer.parseInt(env.getOrDefault("PORT", "8080"));
 
@@ -96,18 +97,22 @@ public class WebApp {
         Javalin app = Javalin.create(config -> { config.registerPlugin(micrometerPlugin); }).start(port);
         //,cambiosEstadoCounter,colaboradoresCounter);
 
-        app.get("/", context -> {context.result("Bienvenido al módulo de Colaboradores!"); } );
-        app.post("/colaboradores", colaboradorController::agregar);
-        app.get("/colaboradores", colaboradorController::obtenerColaboradores);
-        app.get("/colaboradores/{id}", colaboradorController::obtener);
-        app.patch("/colaboradores/{id}",colaboradorController::modificar);
-        app.get("/colaboradores/{id}/puntosAnioMes",colaboradorController::puntosAnioMes);
-        app.get("/colaboradores/{id}/puntosViandasDistribuidasAnioMes",colaboradorController::puntosViandasDistribuidasAnioMes);
-        app.get("/colaboradores/{id}/puntosViandasDonadasAnioMes",colaboradorController::puntosViandasDonadasAnioMes);
-        app.put("/formula", colaboradorController::actualizarPuntos);
-        app.post("/colaboradores/prueba", colaboradorController::prueba);
-        app.delete("/cleanup",colaboradorController::clean);
-        app.get("/metrics",
+            app.get("/", context -> {context.result("Bienvenido al módulo de Colaboradores!"); } );
+            app.post("/colaboradores", colaboradorController::agregar);
+            app.post("/colaboradores/reportarIncidente", colaboradorController::reportar);
+            app.get("/colaboradores", colaboradorController::obtenerColaboradores);
+            app.post("/colaboradores/prueba", colaboradorController::prueba);
+            app.get("/colaboradores/{id}", colaboradorController::obtener);
+            app.patch("/colaboradores/{id}",colaboradorController::cambiarForma);
+            app.patch("/colaboradores/{id}/donar",colaboradorController::donarPesos); //ok falta fecha
+            app.get("/colaboradores/{id}/puntosAnioMes",colaboradorController::puntosAnioMes);
+            app.get("/colaboradores/{id}/puntosViandasDistribuidasAnioMes",colaboradorController::puntosViandasDistribuidasAnioMes);
+            app.get("/colaboradores/{id}/puntosViandasDonadasAnioMes",colaboradorController::puntosViandasDonadasAnioMes);
+            app.put("/formula", colaboradorController::actualizarPuntos);
+            app.patch("/colaboradores/{id}/repararHeladera/{heladeraId}",colaboradorController::repararHeladera); //ok
+            //app.post("/colaboradores/{id}/suscribirMinHeladera",colaboradorController::suscribirseMin);//ok
+            app.delete("/cleanup",colaboradorController::clean);
+            app.get("/metrics",
                 ctx -> {
                     // chequear el header de authorization y chequear el token bearer
                     // configurado

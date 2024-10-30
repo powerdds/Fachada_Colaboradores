@@ -1,42 +1,42 @@
 package ar.edu.utn.dds.k3003.model.DTOs;
 
+import ar.edu.utn.dds.k3003.model.Colaborador;
 import ar.edu.utn.dds.k3003.model.FormaDeColaborarEnum;
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.persistence.Transient;
 import java.util.List;
-
+@Getter
+@Setter
 public final class ColaboradorDTO {
     private Long id;
     private String nombre;
     private List<FormaDeColaborarEnum> formas;
+    public Long pesosDonados;
+    private Long heladerasReparadas;
+    private Long minimoViandas;
+    private Long maximoViandas;
+    private boolean incidente;
 
-    public ColaboradorDTO(String nombre, List<FormaDeColaborarEnum> formas) {
+    public ColaboradorDTO(String nombre, List<FormaDeColaborarEnum> formas , Long pesosDonados , Long heladerasReparadas) {
         this.nombre = nombre;
         this.formas = formas;
+        this.pesosDonados = pesosDonados;
+        this.minimoViandas = -1L;
+        this.maximoViandas = -1L;
+        this.incidente=false;
+        this.heladerasReparadas = heladerasReparadas;
     }
 
-    public Long getId() {
-        return this.id;
+    public void incrementPesosDonados(Long pesos){
+        pesosDonados = pesosDonados + pesos;
     }
 
-    public String getNombre() {
-        return this.nombre;
+    public void incrementHeladerasReparadas(){
+        heladerasReparadas++;
     }
 
-    public List<FormaDeColaborarEnum> getFormas() {
-        return this.formas;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public void setFormas(List<FormaDeColaborarEnum> formas) {
-        this.formas = formas;
-    }
 
     public boolean equals(Object o) {
         if (o == this) {

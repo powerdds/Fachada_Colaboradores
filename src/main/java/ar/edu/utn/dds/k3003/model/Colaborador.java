@@ -24,20 +24,24 @@ public class Colaborador {
     @Convert ( converter = ConversorFormasDeColaborar.class)
     private List<FormaDeColaborarEnum> formas;
 
-    @Transient
-    private boolean puntosCalculados;
+    @Column
+    private Long pesosDonados;//revisar
 
-    public Colaborador(String nombre, List<FormaDeColaborarEnum> formas) {
+    @Column
+    private  Long heladerasReparadas;
+
+    public Colaborador(String nombre, List<FormaDeColaborarEnum> formas, Long pesosDonados, Long heladerasReparadas) {
         this.nombre = nombre;
         this.formas = formas;
-        this.puntosCalculados = false;
+        this.pesosDonados = pesosDonados;
+        this.heladerasReparadas = heladerasReparadas;
     }
 
     public Colaborador() {
         super();
     }
 
-    public boolean getPuntosCalculados(){
+    /*public boolean getPuntosCalculados(){
         return puntosCalculados;
-    }
+    }*/
 }

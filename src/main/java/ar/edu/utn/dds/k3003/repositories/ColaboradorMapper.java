@@ -5,7 +5,7 @@ import ar.edu.utn.dds.k3003.model.Colaborador;
 
 public class ColaboradorMapper {
     public ColaboradorDTO map(Colaborador colaborador){
-        ColaboradorDTO colaboradorDTO =  new ColaboradorDTO(colaborador.getNombre(), colaborador.getFormas());
+        ColaboradorDTO colaboradorDTO =  new ColaboradorDTO(colaborador.getNombre(), colaborador.getFormas() , colaborador.getPesosDonados() , colaborador.getHeladerasReparadas());
         colaboradorDTO.setId(colaborador.getId());
         return colaboradorDTO;
     }

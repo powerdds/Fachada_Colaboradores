@@ -2,14 +2,17 @@ package ar.edu.utn.dds.k3003.clients;
 
 import ar.edu.utn.dds.k3003.facades.FachadaHeladeras;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
+import ar.edu.utn.dds.k3003.model.DTOs.ColaboradorDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.http.HttpStatus;
 import lombok.SneakyThrows;
+import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -32,20 +35,6 @@ public class HeladeraProxy implements FachadaHeladeras {
         this.service = retrofit.create(HeladeraRetrofitClient.class);
     }
 
-/*    @Override
-    @SneakyThrows
-public List<TrasladoDTO> trasladosDeColaborador(Long var1, Integer var2, Integer var3){
-    Response<List<TrasladoDTO>> execute = service.get(var1).execute();
-
-    if (execute.isSuccessful()) {
-        return execute.body();
-    }
-    if (execute.code() == HttpStatus.NOT_FOUND.getCode()) {
-        throw new NoSuchElementException("No se encontraron traslados del colaborador " + var1);
-    }
-    throw new RuntimeException("Error conectandose con el componente logística");
-}*/
-
     public HeladeraDTO agregar(HeladeraDTO var1){return null;}
 
     public void depositar(Integer var1, String var2) throws NoSuchElementException{}
@@ -56,6 +45,31 @@ public List<TrasladoDTO> trasladosDeColaborador(Long var1, Integer var2, Integer
 
     public void temperatura(TemperaturaDTO var1){}
 
+   /* @SneakyThrows
+    public PrintStream suscribir(Long heladeraId, ColaboradorDTO colaborador)throws NoSuchElementException{
+       Response<?> execute = service.suscribir(heladeraId , colaborador).execute();
+
+        if (execute.isSuccessful()) {
+            return System.out.printf("Se ha suscrito exitosamente a la heladera");
+        }
+        if (execute.code() == HttpStatus.NOT_FOUND.getCode()) {
+            throw new NoSuchElementException("No se pudo suscribir a la heladera" + heladeraId);
+        }
+        throw new RuntimeException("Error conectandose con el componente Heladera");
+    }*/
+
+    @SneakyThrows
+    public void reparar(Long heladeraId)throws NoSuchElementException{ //revisar
+        Response<?> execute = service.reparar(heladeraId).execute();
+        if (execute.isSuccessful()) {
+            execute.body();
+        }
+        if (execute.code() == HttpStatus.NOT_FOUND.getCode()) {
+            throw new NoSuchElementException("No se pudo reparar la heladera" + heladeraId);
+        }
+        throw new RuntimeException("Error conectandose con el componente Heladera");
+
+    }
     public List<TemperaturaDTO> obtenerTemperaturas(Integer var1){return null;}
 
     public void setViandasProxy(FachadaViandas fachadaViandas) {}

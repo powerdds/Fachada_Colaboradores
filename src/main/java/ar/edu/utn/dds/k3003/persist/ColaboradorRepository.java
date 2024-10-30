@@ -9,7 +9,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class ColaboradorRepository {
@@ -27,43 +29,55 @@ public class ColaboradorRepository {
 
     public Colaborador save(Colaborador colaborador) {
         EntityManager em = entityManagerFactory.createEntityManager();
-        /*em.getTransaction().begin();
-        em.persist(colaborador);
-        em.getTransaction().commit();
-        em.close();*/
 
-        if (Objects.isNull(colaborador.getId())) {
+        try {
+            if (Objects.isNull(colaborador.getId())) {
             colaborador.setId(seqId.getAndIncrement());
             em.getTransaction().begin();
             em.persist(colaborador);
             em.getTransaction().commit();
-            em.close();
-        }
-        else {
+            }
+            else {
             em.getTransaction().begin();
             em.persist(colaborador);
             em.getTransaction().commit();
+            }
+         return this.findById(colaborador.getId());
+        }
+        catch(Exception e){
+            em.getTransaction().rollback();
+            throw new NoSuchElementException("No se pudo agregar el colaborador, revise el formato presentado");
+        }
+        finally{
             em.close();
         }
-         return this.findById(colaborador.getId());
     }
 
     public Colaborador findById(Long id) {
         EntityManager em = entityManagerFactory.createEntityManager();
-        em.getTransaction().begin();
-        Colaborador colab1 = em.find(Colaborador.class, id);
-        em.getTransaction().commit();
-        em.close();
-        return colab1;
+       // return Optional.ofNullable(em.find(Colaborador.class, id));
+        try{
+            em.getTransaction().begin();
+            Colaborador colab1 = em.find(Colaborador.class, id);
+            em.getTransaction().commit();
+            return colab1;
+        }
+        catch(Exception e){
+            em.getTransaction().rollback();
+            throw new NoSuchElementException("Colaborador no encontrado id: " + id);
+        }
+        finally {
+            em.close();
+        }
     }
 
     public void remove(Long id){
         EntityManager em = entityManagerFactory.createEntityManager();
-        Colaborador col1 = this.findById(id);
-        em.getTransaction().begin();
-        em.remove(em.contains(col1) ? col1 : em.merge(col1));
-        em.getTransaction().commit();
-        em.close();
+            Colaborador col1 = this.findById(id);
+            em.getTransaction().begin();
+            em.remove(em.contains(col1) ? col1 : em.merge(col1));
+            em.getTransaction().commit();
+            em.close();
     }
     public List<Colaborador> list(){
         EntityManager em = entityManagerFactory.createEntityManager();
