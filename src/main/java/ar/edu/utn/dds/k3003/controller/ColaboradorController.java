@@ -58,7 +58,7 @@ public class ColaboradorController {
             context.json(colaboradorDTO);
         } catch (NoSuchElementException ex) {
             //context.result("Colaborador " + id + " no encontrado" + ex.getMessage());
-            context.status(404).result("Colaborador " + id + " no encontrado" + ex.getMessage());
+            context.status(404).result("Colaborador " + id + " no encontrado " + ex.getMessage());
         }
     }
     public void obtenerColaboradores(Context context) {
@@ -156,7 +156,7 @@ public class ColaboradorController {
             context.status(HttpStatus.OK);
             context.result("El colaborador " + colaboradorId + " pudo reparar la heladera");
         } catch (NoSuchElementException ex) {
-            context.result("No se pudo registrar el arreglo a la heladera"); //ex.getLocalizedMessage());
+            context.result("No se pudo reparar la heladera"); //ex.getLocalizedMessage());
             context.status(HttpStatus.NOT_ACCEPTABLE);
         }
     }

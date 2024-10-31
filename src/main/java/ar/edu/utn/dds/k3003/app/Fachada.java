@@ -53,8 +53,7 @@ public class Fachada {
     }
 
     public ColaboradorDTO buscarXId(Long colaboradorId)throws NoSuchElementException {
-        Colaborador colaborador = colaboradorRepository.findById(colaboradorId);/*.orElseThrow(() ->
-               new NoSuchElementException("Colaborador no encontrado id: " + colaboradorId));*/
+       Colaborador colaborador = colaboradorRepository.findById(colaboradorId);//.orElseThrow(()
         return colaboradorMapper.map(colaborador);
     }
 
@@ -67,8 +66,11 @@ public class Fachada {
         colaboradorCambiado.setId(colaboradorId);
         if (colaboradorDTO.getPesosDonados()>0){
         colaboradorCambiado.setPesosDonados(colaboradorDTO.getPesosDonados());}*/
-        colaboradorDTO.setFormas(formaDeColaborar);
-        return agregarConID(colaboradorDTO,colaboradorId);
+        try{colaboradorDTO.setFormas(formaDeColaborar);
+        return agregarConID(colaboradorDTO,colaboradorId);}
+        catch(Exception e){
+            throw new NoSuchElementException(" ");
+        }
     }
 
     public ColaboradorDTO modificarPesos(Long colaboradorId, Long pesos){
@@ -84,14 +86,12 @@ public class Fachada {
     }*/
 
     public void repararHeladera(Long colaboradorId , Long heladeraId){//revisar
-        
+
         if(colaboradorEs(colaboradorId , TECNICO)) {
             //fachadaHeladeras.reparar(heladeraId);
             añadirReparo(colaboradorId);//ok
         }
-        else {
-            System.out.print("El colaborador no es un tecnico");
-        }
+        else throw new NoSuchElementException(" ");
     }
 
     public boolean colaboradorEs(Long id, FormaDeColaborarEnum forma){

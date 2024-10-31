@@ -55,20 +55,11 @@ public class ColaboradorRepository {
 
     public Colaborador findById(Long id) {
         EntityManager em = entityManagerFactory.createEntityManager();
-       // return Optional.ofNullable(em.find(Colaborador.class, id));
-        try{
             em.getTransaction().begin();
             Colaborador colab1 = em.find(Colaborador.class, id);
             em.getTransaction().commit();
-            return colab1;
-        }
-        catch(Exception e){
-            em.getTransaction().rollback();
-            throw new NoSuchElementException("Colaborador no encontrado id: " + id);
-        }
-        finally {
             em.close();
-        }
+            return colab1;
     }
 
     public void remove(Long id){
