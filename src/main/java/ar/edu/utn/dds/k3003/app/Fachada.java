@@ -88,7 +88,7 @@ public class Fachada {
     public void repararHeladera(Long colaboradorId , Long heladeraId){//revisar
 
         if(colaboradorEs(colaboradorId , TECNICO)) {
-            //fachadaHeladeras.reparar(heladeraId);
+            fachadaHeladeras.reparar(heladeraId);
             añadirReparo(colaboradorId);//ok
         }
         else throw new NoSuchElementException(" ");
