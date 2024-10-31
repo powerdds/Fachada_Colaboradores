@@ -39,7 +39,7 @@ public class TestColaborador {
         entityManagerFactory = Persistence.createEntityManagerFactory("colaboradoresdb");
         fColaboradores = new Fachada(entityManagerFactory); // this.instance();
         formaDeColaborar = List.of(FormaDeColaborarEnum.DONADORDINERO);
-        colaborador = new ColaboradorDTO("Juana" , formaDeColaborar);
+        colaborador = new ColaboradorDTO("Juana" , formaDeColaborar,0L ,0L);
         nombre1 = "Juan";
         fColaboradores.setLogisticaProxy(logistica);
         fColaboradores.setViandasProxy(viandas);    }
@@ -59,7 +59,7 @@ public class TestColaborador {
     @Test
     public void modificarEstadoColaboradorTest(){
         ColaboradorDTO colaborador3 = fColaboradores.agregar(colaborador);
-        colaborador2 = fColaboradores.modificar(colaborador3.getId(), List.of(FormaDeColaborarEnum.TRANSPORTADOR));
+        colaborador2 = fColaboradores.modificarFormas(colaborador3.getId(), List.of(FormaDeColaborarEnum.TRANSPORTADOR));
         assertNotEquals(colaborador2.getFormas() , formaDeColaborar,"Se cambio la forma de colaborar");
     }
 

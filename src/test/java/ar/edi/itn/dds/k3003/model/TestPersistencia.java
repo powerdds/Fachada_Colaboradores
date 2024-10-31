@@ -34,7 +34,7 @@ public class TestPersistencia {
 
    @Test
     public void testGuardarYRecuperarDoc() throws Exception {
-        Colaborador col1 = new Colaborador("pepe", List.of(DONADORDINERO));
+        Colaborador col1 = new Colaborador("pepe", List.of(DONADORDINERO),0L ,0L);
         entityManager.getTransaction().begin();
         entityManager.persist(col1);
         entityManager.getTransaction().commit();
@@ -48,7 +48,7 @@ public class TestPersistencia {
     @Test
     public void testGuardarYRecuperarColaborador() throws Exception {
 // Pre condiciones: se supone que el revisor esta dado de alta ANTES de cargar el lote
-        Colaborador colaborador= new Colaborador("Jose" , List.of(DONADORDINERO));
+        Colaborador colaborador= new Colaborador("Jose" , List.of(DONADORDINERO),0L ,0L);
 // Notar que volvemos a inicializar la persistencia
         entityManager = entityManagerFactory.createEntityManager();
         ColaboradorRepository colaboradorRepo= new ColaboradorRepository(entityManagerFactory);
