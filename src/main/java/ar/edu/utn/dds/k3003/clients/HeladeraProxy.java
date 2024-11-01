@@ -60,7 +60,7 @@ public class HeladeraProxy implements FachadaHeladeras {
 
     @SneakyThrows
     public void reparar(Long heladeraId)throws NoSuchElementException{ //revisar
-        Response<?> execute = service.reparar(heladeraId).execute();
+        Response<Void> execute = service.reparar(heladeraId).execute();
         if (execute.isSuccessful()) {
             execute.body();
         }

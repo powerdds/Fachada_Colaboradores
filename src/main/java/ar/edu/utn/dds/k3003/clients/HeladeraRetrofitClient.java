@@ -13,6 +13,6 @@ public interface HeladeraRetrofitClient {
    /* @POST("/heladeras/{id}/suscribir")//query
     Call<?> suscribir(@Path("id") Long heladeraId , @Body ColaboradorDTO colaborador);*/
     @PATCH("/heladeras/{id}/reparar")
-    Call<?> reparar(@Path("id") Long heladeraId);
+    Call<Void>  reparar(@Path("id") Long heladeraId);
 }
 
