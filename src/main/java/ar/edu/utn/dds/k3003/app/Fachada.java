@@ -138,11 +138,11 @@ public class Fachada {
 
     public Long viandasDonadas(Long colaboradorId, Integer mes, Integer anio){
         List<ViandaDTO> viandas =  fachadaViandas.viandasDeColaborador(colaboradorId,mes,anio);
-        return (long) viandas.size();
+        return (viandas != null) ? (long) viandas.size() : 0L;
     }
     public Long viandasDistribuidas(Long colaboradorId, Integer mes, Integer anio){
         List<TrasladoDTO> traslados =  fachadaLogistica.trasladosDeColaborador(colaboradorId,mes,anio);
-        return (long) traslados.size();
+        return (traslados != null) ? (long) traslados.size() : 0L;
     }
     public Long pesosDonados(Long colaboradorId){
         return buscarXId(colaboradorId).getPesosDonados();
@@ -150,7 +150,6 @@ public class Fachada {
 
     public Long heladerasReparadas(Long colaboradorId){
         return buscarXId(colaboradorId).getHeladerasReparadas();
-
     }
 
     public void notificarIncidente(AlertaDTO alerta){
