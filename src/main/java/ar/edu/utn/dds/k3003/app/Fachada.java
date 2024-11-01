@@ -20,6 +20,7 @@ import javax.persistence.EntityManagerFactory;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import static ar.edu.utn.dds.k3003.model.FormaDeColaborarEnum.DONADORDINERO;
 import static ar.edu.utn.dds.k3003.model.FormaDeColaborarEnum.TECNICO;
 
 public class Fachada {
@@ -69,8 +70,17 @@ public class Fachada {
         try{colaboradorDTO.setFormas(formaDeColaborar);
         return agregarConID(colaboradorDTO,colaboradorId);}
         catch(Exception e){
-            throw new NoSuchElementException(" ");
+            throw new NoSuchElementException("No se pudo modificar al colaborador \n");
         }
+    }
+
+    public ColaboradorDTO donar(Long colaboradorId , Long pesos){
+        if(colaboradorEs(colaboradorId , DONADORDINERO)) {
+            ColaboradorDTO colaboradorDTO = modificarPesos(colaboradorId , pesos);
+            añadirReparo(colaboradorId);//ok
+            return colaboradorDTO;
+        }
+        else throw new NoSuchElementException("El colaborador no es un DONADORDINERO \n");
     }
 
     public ColaboradorDTO modificarPesos(Long colaboradorId, Long pesos){
@@ -91,7 +101,7 @@ public class Fachada {
             fachadaHeladeras.reparar(heladeraId);
             añadirReparo(colaboradorId);//ok
         }
-        else throw new NoSuchElementException(" ");
+        else throw new NoSuchElementException("El colaborador no es un TECNICO \n");
     }
 
     public boolean colaboradorEs(Long id, FormaDeColaborarEnum forma){

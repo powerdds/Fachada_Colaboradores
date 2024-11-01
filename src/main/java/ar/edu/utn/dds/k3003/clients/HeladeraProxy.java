@@ -65,7 +65,7 @@ public class HeladeraProxy implements FachadaHeladeras {
             execute.body();
         }
         if (execute.code() == HttpStatus.NOT_FOUND.getCode()) {
-            throw new NoSuchElementException("No se pudo reparar la heladera" + heladeraId);
+            throw new NoSuchElementException("No se pudo reparar la heladera " + heladeraId);
         }
         throw new RuntimeException("Error conectandose con el componente Heladera");
 

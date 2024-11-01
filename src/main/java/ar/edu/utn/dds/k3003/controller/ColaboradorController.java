@@ -97,12 +97,12 @@ public class ColaboradorController {
         var mes = context.queryParamAsClass("mes", Long.class).get();
 
         try {
-            var colaboradorDTO = fachada.modificarPesos(id, pesos);
+            var colaboradorDTO = fachada.donar(id, pesos);
             context.status(HttpStatus.OK);
             context.result("El colaborador donó correctamente \n");
             context.json(colaboradorDTO);
         } catch (NoSuchElementException ex) {
-            context.result("No se pudo donar el dinero"); //ex.getLocalizedMessage());
+            context.result("No se pudo donar el dinero \n"); //ex.getLocalizedMessage());
             context.status(HttpStatus.NOT_ACCEPTABLE);
         }
     }
