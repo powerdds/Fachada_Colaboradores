@@ -62,12 +62,12 @@ public class HeladeraProxy implements FachadaHeladeras {
     public void reparar(Long heladeraId)throws NoSuchElementException{ //revisar
         Response<Void> execute = service.reparar(heladeraId).execute();
         if (execute.isSuccessful()) {
-            execute.body();
+            System.out.printf("Se reparó la heladera " + heladeraId);
         }
-        if (execute.code() == HttpStatus.NOT_FOUND.getCode()) {
+        else if (execute.code() == HttpStatus.NOT_FOUND.getCode()) {
             throw new NoSuchElementException("No se pudo reparar la heladera " + heladeraId);
         }
-        throw new RuntimeException("Error conectandose con el componente Heladera");
+        else {throw new RuntimeException("Error conectandose con el componente Heladera");}
 
     }
     public List<TemperaturaDTO> obtenerTemperaturas(Integer var1){return null;}
