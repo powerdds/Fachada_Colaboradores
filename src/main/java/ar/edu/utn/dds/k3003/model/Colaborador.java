@@ -25,15 +25,16 @@ public class Colaborador {
     private List<FormaDeColaborarEnum> formas;
 
     @Column
-    private Long pesosDonados;//revisar
+    @ManyToOne
+    private List<Donacion> donaciones;
 
     @Column
     private  Long heladerasReparadas;
 
-    public Colaborador(String nombre, List<FormaDeColaborarEnum> formas, Long pesosDonados, Long heladerasReparadas) {
+    public Colaborador(String nombre, List<FormaDeColaborarEnum> formas, List<Donacion> donaciones, Long heladerasReparadas) {
         this.nombre = nombre;
         this.formas = formas;
-        this.pesosDonados = pesosDonados;
+        this.donaciones = donaciones;
         this.heladerasReparadas = heladerasReparadas;
     }
 
@@ -41,7 +42,4 @@ public class Colaborador {
         super();
     }
 
-    /*public boolean getPuntosCalculados(){
-        return puntosCalculados;
-    }*/
 }

@@ -2,6 +2,7 @@ package ar.edu.utn.dds.k3003.controller;
 
 import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.model.DTOs.AlertaDTO;
+import ar.edu.utn.dds.k3003.model.Donacion;
 import ar.edu.utn.dds.k3003.model.PuntosBody;
 import ar.edu.utn.dds.k3003.model.FormaDeColaborar;
 import ar.edu.utn.dds.k3003.model.FormaDeColaborarEnum;
@@ -92,12 +93,10 @@ public class ColaboradorController {
 
     public void donarPesos(Context context){
         var id = context.pathParamAsClass("id", Long.class).get();
-        var pesos = context.queryParamAsClass("pesos", Long.class).get();
-        var dia = context.queryParamAsClass("dia", Long.class).get();
-        var mes = context.queryParamAsClass("mes", Long.class).get();
+        var donacion = context.bodyAsClass(Donacion.class);
 
         try {
-            var colaboradorDTO = fachada.donar(id, pesos);
+            var colaboradorDTO = fachada.donar(id,donacion);
             context.status(HttpStatus.OK);
             context.result("El colaborador donó correctamente \n");
             context.json(colaboradorDTO);
@@ -233,11 +232,11 @@ public class ColaboradorController {
     }
 
     public void prueba(Context context) {
-        ColaboradorDTO colaborador1 = new ColaboradorDTO("Aylen", List.of(FormaDeColaborarEnum.DONADORDINERO),0L,0L);
-        ColaboradorDTO colaborador2 = new ColaboradorDTO("Javier", List.of(FormaDeColaborarEnum.TRANSPORTADOR),0L,0L);
-        ColaboradorDTO colaborador3 = new ColaboradorDTO("Eduardo", List.of(FormaDeColaborarEnum.DONADORVIANDA),0L,0L);
-        ColaboradorDTO colaborador4 = new ColaboradorDTO("Sabrina", List.of(FormaDeColaborarEnum.TECNICO),0L,0L);
-        ColaboradorDTO colaborador5 = new ColaboradorDTO("Daniel", List.of(FormaDeColaborarEnum.TRANSPORTADOR),0L,0L);
+        ColaboradorDTO colaborador1 = new ColaboradorDTO("Aylen", List.of(FormaDeColaborarEnum.DONADORDINERO),null,0L);
+        ColaboradorDTO colaborador2 = new ColaboradorDTO("Javier", List.of(FormaDeColaborarEnum.TRANSPORTADOR),null,0L);
+        ColaboradorDTO colaborador3 = new ColaboradorDTO("Eduardo", List.of(FormaDeColaborarEnum.DONADORVIANDA),null,0L);
+        ColaboradorDTO colaborador4 = new ColaboradorDTO("Sabrina", List.of(FormaDeColaborarEnum.TECNICO),null,0L);
+        ColaboradorDTO colaborador5 = new ColaboradorDTO("Daniel", List.of(FormaDeColaborarEnum.TRANSPORTADOR),null,0L);
         fachada.agregar(colaborador1);
         fachada.agregar(colaborador2);
         fachada.agregar(colaborador3);

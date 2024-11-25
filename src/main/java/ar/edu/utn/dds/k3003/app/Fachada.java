@@ -3,16 +3,13 @@ package ar.edu.utn.dds.k3003.app;
 import ar.edu.utn.dds.k3003.clients.HeladeraProxy;
 import ar.edu.utn.dds.k3003.facades.FachadaLogistica;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
-import ar.edu.utn.dds.k3003.model.Colaborador;
+import ar.edu.utn.dds.k3003.model.*;
 import ar.edu.utn.dds.k3003.model.DTOs.AlertaDTO;
 import ar.edu.utn.dds.k3003.model.DTOs.ColaboradorDTO;
-import ar.edu.utn.dds.k3003.model.FormaDeColaborarEnum;
 
 import ar.edu.utn.dds.k3003.facades.dtos.TrasladoDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 
-import ar.edu.utn.dds.k3003.model.Incidente;
-import ar.edu.utn.dds.k3003.model.Notificar;
 import ar.edu.utn.dds.k3003.repositories.ColaboradorMapper;
 import ar.edu.utn.dds.k3003.persist.ColaboradorRepository;
 
@@ -42,12 +39,12 @@ public class Fachada {
     }
 
     public ColaboradorDTO agregar(ColaboradorDTO colaboradorDto) {
-        Colaborador colaborador = new Colaborador(colaboradorDto.getNombre() , colaboradorDto.getFormas(),0L,0L);
+        Colaborador colaborador = new Colaborador(colaboradorDto.getNombre() , colaboradorDto.getFormas(),null,0L);
         colaborador = this.colaboradorRepository.save(colaborador);
         return colaboradorMapper.map(colaborador);
     }
     public ColaboradorDTO agregarConID(ColaboradorDTO colaboradorDto, Long id) {
-        Colaborador colaborador = new Colaborador(colaboradorDto.getNombre() , colaboradorDto.getFormas(),colaboradorDto.getPesosDonados(), colaboradorDto.getHeladerasReparadas());
+        Colaborador colaborador = new Colaborador(colaboradorDto.getNombre() , colaboradorDto.getFormas(),colaboradorDto.getDonaciones(), colaboradorDto.getHeladerasReparadas());
         colaborador.setId(id);
         colaborador = this.colaboradorRepository.save(colaborador);
         return colaboradorMapper.map(colaborador);
@@ -74,19 +71,18 @@ public class Fachada {
         }
     }
 
-    public ColaboradorDTO donar(Long colaboradorId , Long pesos){
+    public ColaboradorDTO donar(Long colaboradorId , Donacion donacion){
         if(colaboradorEs(colaboradorId , DONADORDINERO)) {
-            ColaboradorDTO colaboradorDTO = modificarPesos(colaboradorId , pesos);
-            añadirReparo(colaboradorId);//ok
+            ColaboradorDTO colaboradorDTO = agregarDonacion(colaboradorId , donacion);
             return colaboradorDTO;
         }
         else throw new NoSuchElementException("El colaborador no es un DONADORDINERO \n");
     }
 
-    public ColaboradorDTO modificarPesos(Long colaboradorId, Long pesos){
+    public ColaboradorDTO agregarDonacion(Long colaboradorId, Donacion donacion){
         ColaboradorDTO colaboradorDTO = buscarXId(colaboradorId);
         colaboradorRepository.remove(colaboradorId);
-        colaboradorDTO.incrementPesosDonados(pesos);
+        colaboradorDTO.donar(donacion);
         return agregarConID(colaboradorDTO,colaboradorId);
     }
 
@@ -99,7 +95,7 @@ public class Fachada {
 
         if(colaboradorEs(colaboradorId , TECNICO)) {
             fachadaHeladeras.reparar(heladeraId);
-            añadirReparo(colaboradorId);//ok
+            añadirReparo(colaboradorId);
         }
         else throw new NoSuchElementException("El colaborador no es un TECNICO \n");
     }
@@ -155,7 +151,7 @@ public class Fachada {
         return (traslados != null) ? (long) traslados.size() : 0L;
     }
     public Long pesosDonados(Long colaboradorId){
-        return buscarXId(colaboradorId).getPesosDonados();
+        return (long) buscarXId(colaboradorId).getValorDonaciones();
     }
 
     public Long heladerasReparadas(Long colaboradorId){

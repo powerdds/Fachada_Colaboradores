@@ -1,36 +1,43 @@
 package ar.edu.utn.dds.k3003.model.DTOs;
 
-import ar.edu.utn.dds.k3003.model.Colaborador;
+import ar.edu.utn.dds.k3003.model.Donacion;
 import ar.edu.utn.dds.k3003.model.FormaDeColaborarEnum;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Transient;
 import java.util.List;
+import java.util.stream.Stream;
+
 @Getter
 @Setter
 public final class ColaboradorDTO {
     private Long id;
     private String nombre;
     private List<FormaDeColaborarEnum> formas;
-    public Long pesosDonados;
+    private List<Donacion> donaciones;
     private Long heladerasReparadas;
     private Long minimoViandas;
     private Long maximoViandas;
     private boolean incidente;
 
-    public ColaboradorDTO(String nombre, List<FormaDeColaborarEnum> formas , Long pesosDonados , Long heladerasReparadas) {
+    public ColaboradorDTO(String nombre, List<FormaDeColaborarEnum> formas , List<Donacion> donaciones , Long heladerasReparadas) {
         this.nombre = nombre;
         this.formas = formas;
-        this.pesosDonados = pesosDonados;
+        this.donaciones = donaciones;
         this.minimoViandas = -1L;
         this.maximoViandas = -1L;
-        this.incidente=false;
+        this.incidente = false;
         this.heladerasReparadas = heladerasReparadas;
     }
 
-    public void incrementPesosDonados(Long pesos){
-        pesosDonados = pesosDonados + pesos;
+    public void donar(Donacion donacion){
+        donaciones.add(donacion);
+    }
+
+    public int getValorDonaciones(){
+        return donaciones.stream().mapToInt(Donacion::getValor).sum();
+
+                //(id -> {notificador.alerta(incidente,buscarXId(Long.valueOf(id)))
     }
 
     public void incrementHeladerasReparadas(){
