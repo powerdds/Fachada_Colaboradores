@@ -39,7 +39,7 @@ public class TestColaborador {
         entityManagerFactory = Persistence.createEntityManagerFactory("colaboradoresdb");
         fColaboradores = new Fachada(entityManagerFactory); // this.instance();
         formaDeColaborar = List.of(FormaDeColaborarEnum.DONADORDINERO);
-        colaborador = new ColaboradorDTO("Juana" , formaDeColaborar,0L ,0L);
+        colaborador = new ColaboradorDTO("Juana" , formaDeColaborar, null,0L);
         nombre1 = "Juan";
         fColaboradores.setLogisticaProxy(logistica);
         fColaboradores.setViandasProxy(viandas);    }

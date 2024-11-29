@@ -8,6 +8,7 @@
     <persistence-unit name="colaboradoresdb" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>ar.edu.utn.dds.k3003.model.Colaborador</class>
+        <class>ar.edu.utn.dds.k3003.model.Donacion</class>
 
         <properties>
             <property name="hibernate.default_schema" value="public"/>
@@ -23,3 +24,4 @@
     </persistence-unit>
 
 </persistence>
+

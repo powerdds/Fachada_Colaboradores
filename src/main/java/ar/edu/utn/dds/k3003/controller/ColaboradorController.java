@@ -2,6 +2,8 @@ package ar.edu.utn.dds.k3003.controller;
 
 import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.model.DTOs.AlertaDTO;
+import ar.edu.utn.dds.k3003.model.DTOs.ColaboradorRtaDTO;
+import ar.edu.utn.dds.k3003.model.DTOs.DonacionDTO;
 import ar.edu.utn.dds.k3003.model.Donacion;
 import ar.edu.utn.dds.k3003.model.PuntosBody;
 import ar.edu.utn.dds.k3003.model.FormaDeColaborar;
@@ -44,10 +46,10 @@ public class ColaboradorController {
     public void agregar(Context context) {
         var colaboradorDTO = context.bodyAsClass(ColaboradorDTO.class);
         final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-        var colaboradorDTORta = this.fachada.agregar(colaboradorDTO);
+        var colaboradorDTORta = fachada.agregar(colaboradorDTO);
         colaboradoresCounter.increment();
         registry.config().commonTags("app", "metrics-colaborador");
-        context.json(colaboradorDTORta);
+        context.json(new ColaboradorRtaDTO(colaboradorDTORta));
         context.status(HttpStatus.CREATED);
     }
 
@@ -56,9 +58,8 @@ public class ColaboradorController {
         try {
             var colaboradorDTO = this.fachada.buscarXId(id);
             context.status(HttpStatus.OK);
-            context.json(colaboradorDTO);
+            context.json(new ColaboradorRtaDTO(colaboradorDTO));
         } catch (NoSuchElementException ex) {
-            //context.result("Colaborador " + id + " no encontrado" + ex.getMessage());
             context.status(404).result("Colaborador " + id + " no encontrado " + ex.getMessage());
         }
     }
@@ -69,6 +70,17 @@ public class ColaboradorController {
             context.json(colaboradorDTO);
         } catch (NoSuchElementException ex) {
             context.result("Colaboradores no encontrados" + ex.getLocalizedMessage());
+            context.status(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public void obtenerDonaciones(Context context) {
+        try {
+            var donacionesDTO = this.fachada.colaboradorRepository.listDonacion();
+            context.status(HttpStatus.OK);
+            context.json(donacionesDTO);
+        } catch (NoSuchElementException ex) {
+            context.result("Donaciones no encontradas" + ex.getLocalizedMessage());
             context.status(HttpStatus.NOT_FOUND);
         }
     }
@@ -84,7 +96,7 @@ public class ColaboradorController {
             //new MicrometerPlugin(config -> config.registry = registry);
             context.status(HttpStatus.OK);
             context.result("Se modificó correctamente la forma de colaborar del colaborador " + id);
-            context.json(colaboradorDTO);
+            context.json(new ColaboradorRtaDTO(colaboradorDTO));
         } catch (NoSuchElementException ex) {
             context.result("No se pudo modificar el colaborador"); //ex.getLocalizedMessage());
             context.status(HttpStatus.NOT_ACCEPTABLE);
@@ -93,13 +105,12 @@ public class ColaboradorController {
 
     public void donarPesos(Context context){
         var id = context.pathParamAsClass("id", Long.class).get();
-        var donacion = context.bodyAsClass(Donacion.class);
-
+        var donacion = context.bodyAsClass(DonacionDTO.class);
         try {
             var colaboradorDTO = fachada.donar(id,donacion);
             context.status(HttpStatus.OK);
             context.result("El colaborador donó correctamente \n");
-            context.json(colaboradorDTO);
+            context.json(new ColaboradorRtaDTO(colaboradorDTO));
         } catch (NoSuchElementException ex) {
             context.result("No se pudo donar el dinero \n"); //ex.getLocalizedMessage());
             context.status(HttpStatus.NOT_ACCEPTABLE);
@@ -232,6 +243,7 @@ public class ColaboradorController {
     }
 
     public void prueba(Context context) {
+
         ColaboradorDTO colaborador1 = new ColaboradorDTO("Aylen", List.of(FormaDeColaborarEnum.DONADORDINERO),null,0L);
         ColaboradorDTO colaborador2 = new ColaboradorDTO("Javier", List.of(FormaDeColaborarEnum.TRANSPORTADOR),null,0L);
         ColaboradorDTO colaborador3 = new ColaboradorDTO("Eduardo", List.of(FormaDeColaborarEnum.DONADORVIANDA),null,0L);

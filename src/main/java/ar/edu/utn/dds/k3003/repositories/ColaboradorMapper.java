@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 
 public class ColaboradorMapper {
     public ColaboradorDTO map(Colaborador colaborador){
-       try{ ColaboradorDTO colaboradorDTO =  new ColaboradorDTO(colaborador.getNombre(), colaborador.getFormas() , colaborador.getPesosDonados() , colaborador.getHeladerasReparadas());
+       try{ ColaboradorDTO colaboradorDTO =  new ColaboradorDTO(colaborador.getNombre(), colaborador.getFormas() , colaborador.getDonaciones() , colaborador.getHeladerasReparadas());
         colaboradorDTO.setId(colaborador.getId());
         return colaboradorDTO;}
        catch(Exception e){

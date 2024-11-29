@@ -101,10 +101,11 @@ public class WebApp {
             app.post("/colaboradores", colaboradorController::agregar);
             app.post("/colaboradores/reportarIncidente", colaboradorController::reportar);
             app.get("/colaboradores", colaboradorController::obtenerColaboradores);
+            app.get("/colaboradores/donaciones", colaboradorController::obtenerDonaciones);
             app.post("/colaboradores/prueba", colaboradorController::prueba);
             app.get("/colaboradores/{id}", colaboradorController::obtener);
             app.patch("/colaboradores/{id}",colaboradorController::cambiarForma);
-            app.patch("/colaboradores/{id}/donar",colaboradorController::donarPesos); //ok falta fecha
+            app.post("/colaboradores/{id}/donar",colaboradorController::donarPesos);
             app.get("/colaboradores/{id}/puntosAnioMes",colaboradorController::puntosAnioMes);
             app.get("/colaboradores/{id}/puntosViandasDistribuidasAnioMes",colaboradorController::puntosViandasDistribuidasAnioMes);
             app.get("/colaboradores/{id}/puntosViandasDonadasAnioMes",colaboradorController::puntosViandasDonadasAnioMes);

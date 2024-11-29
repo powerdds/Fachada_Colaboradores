@@ -10,6 +10,9 @@ import java.util.stream.Stream;
 
 @Getter
 @Setter
+/*
+* @Data
+* @NoArgConstructor*/
 public final class ColaboradorDTO {
     private Long id;
     private String nombre;
@@ -29,21 +32,10 @@ public final class ColaboradorDTO {
         this.incidente = false;
         this.heladerasReparadas = heladerasReparadas;
     }
-
-    public void donar(Donacion donacion){
+    public ColaboradorDTO donar(Donacion donacion){
         donaciones.add(donacion);
+        return this;
     }
-
-    public int getValorDonaciones(){
-        return donaciones.stream().mapToInt(Donacion::getValor).sum();
-
-                //(id -> {notificador.alerta(incidente,buscarXId(Long.valueOf(id)))
-    }
-
-    public void incrementHeladerasReparadas(){
-        heladerasReparadas++;
-    }
-
 
     public boolean equals(Object o) {
         if (o == this) {

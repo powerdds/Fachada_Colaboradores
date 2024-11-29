@@ -2,6 +2,7 @@ package ar.edu.utn.dds.k3003.persist;
 
 import ar.edu.utn.dds.k3003.model.DTOs.ColaboradorDTO;
 import ar.edu.utn.dds.k3003.model.Colaborador;
+import ar.edu.utn.dds.k3003.model.Donacion;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -29,26 +30,46 @@ public class ColaboradorRepository {
 
     public Colaborador save(Colaborador colaborador) {
         EntityManager em = entityManagerFactory.createEntityManager();
-
         try {
-            if (Objects.isNull(colaborador.getId())) {
             colaborador.setId(seqId.getAndIncrement());
             em.getTransaction().begin();
             em.persist(colaborador);
             em.getTransaction().commit();
-            }
-            else {
-            em.getTransaction().begin();
-            em.persist(colaborador);
-            em.getTransaction().commit();
-            }
-         return this.findById(colaborador.getId());
+            return this.findById(colaborador.getId());
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw new NoSuchElementException("No se pudo agregar el colaborador, revise el formato presentado");
+        } finally {
+            em.close();
+        }
+    }
+    public void saveDonacion(Donacion donacion) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+                donacion.setId(seqId.getAndIncrement());
+                em.getTransaction().begin();
+                em.persist(donacion);
+                em.getTransaction().commit();
         }
         catch(Exception e){
             em.getTransaction().rollback();
-            throw new NoSuchElementException("No se pudo agregar el colaborador, revise el formato presentado");
+            throw new NoSuchElementException("No se pudo agregar la donacion");
         }
         finally{
+            em.close();
+        }
+    }
+    public Colaborador update(Colaborador entity) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Colaborador updatedEntity = em.merge(entity);
+            em.getTransaction().commit();
+            return updatedEntity; // Devolver la entidad actualizada
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw new NoSuchElementException("No se pudo actualizar el colaborador");
+        } finally {
             em.close();
         }
     }
@@ -70,11 +91,21 @@ public class ColaboradorRepository {
             em.getTransaction().commit();
             em.close();
     }
+
     public List<Colaborador> list(){
         EntityManager em = entityManagerFactory.createEntityManager();
         List<Colaborador> colaboradores = em.createQuery("from Colaborador", Colaborador.class).getResultList();
 
         return colaboradores;
     }
-}
+
+    public List<Donacion> listDonacion(){
+        EntityManager em = entityManagerFactory.createEntityManager();
+        List<Donacion> donaciones = em.createQuery("from Donacion", Donacion.class).getResultList();
+
+        return donaciones;
+    }
+
+    }
+
 

@@ -10,10 +10,12 @@ import ar.edu.utn.dds.k3003.model.DTOs.ColaboradorDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.TrasladoDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 
+import ar.edu.utn.dds.k3003.model.DTOs.DonacionDTO;
 import ar.edu.utn.dds.k3003.repositories.ColaboradorMapper;
 import ar.edu.utn.dds.k3003.persist.ColaboradorRepository;
 
 import javax.persistence.EntityManagerFactory;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -39,14 +41,8 @@ public class Fachada {
     }
 
     public ColaboradorDTO agregar(ColaboradorDTO colaboradorDto) {
-        Colaborador colaborador = new Colaborador(colaboradorDto.getNombre() , colaboradorDto.getFormas(),null,0L);
-        colaborador = this.colaboradorRepository.save(colaborador);
-        return colaboradorMapper.map(colaborador);
-    }
-    public ColaboradorDTO agregarConID(ColaboradorDTO colaboradorDto, Long id) {
-        Colaborador colaborador = new Colaborador(colaboradorDto.getNombre() , colaboradorDto.getFormas(),colaboradorDto.getDonaciones(), colaboradorDto.getHeladerasReparadas());
-        colaborador.setId(id);
-        colaborador = this.colaboradorRepository.save(colaborador);
+        Colaborador colaborador = new Colaborador(colaboradorDto.getNombre() , colaboradorDto.getFormas());
+        colaborador = colaboradorRepository.save(colaborador);
         return colaboradorMapper.map(colaborador);
     }
 
@@ -56,46 +52,35 @@ public class Fachada {
     }
 
     public ColaboradorDTO modificarFormas(Long colaboradorId, List<FormaDeColaborarEnum> formaDeColaborar){
-        ColaboradorDTO colaboradorDTO = buscarXId(colaboradorId);
-        colaboradorRepository.remove(colaboradorId);
-        /*ColaboradorDTO colaboradorCambiado =
-                new ColaboradorDTO(colaboradorDTO.getNombre(),
-                        formaDeColaborar);
-        colaboradorCambiado.setId(colaboradorId);
-        if (colaboradorDTO.getPesosDonados()>0){
-        colaboradorCambiado.setPesosDonados(colaboradorDTO.getPesosDonados());}*/
-        try{colaboradorDTO.setFormas(formaDeColaborar);
-        return agregarConID(colaboradorDTO,colaboradorId);}
+        Colaborador colaborador = colaboradorRepository.findById(colaboradorId);
+        try{
+            colaborador.setFormas(formaDeColaborar);
+            colaboradorRepository.update(colaborador);
+            return buscarXId(colaboradorId);
+        }
+
         catch(Exception e){
             throw new NoSuchElementException("No se pudo modificar al colaborador \n");
         }
     }
 
-    public ColaboradorDTO donar(Long colaboradorId , Donacion donacion){
+    public ColaboradorDTO donar(Long colaboradorId , DonacionDTO donacionDTO){
+        Colaborador donante = colaboradorRepository.findById(colaboradorId);
+        Donacion donacion = new Donacion(donacionDTO.valor, donacionDTO.fecha, donante);
         if(colaboradorEs(colaboradorId , DONADORDINERO)) {
-            ColaboradorDTO colaboradorDTO = agregarDonacion(colaboradorId , donacion);
-            return colaboradorDTO;
+            colaboradorRepository.saveDonacion(donacion);
+            donante.donar(donacion);
+            colaboradorRepository.update(donante);
+            return buscarXId(colaboradorId);
         }
         else throw new NoSuchElementException("El colaborador no es un DONADORDINERO \n");
     }
 
-    public ColaboradorDTO agregarDonacion(Long colaboradorId, Donacion donacion){
-        ColaboradorDTO colaboradorDTO = buscarXId(colaboradorId);
-        colaboradorRepository.remove(colaboradorId);
-        colaboradorDTO.donar(donacion);
-        return agregarConID(colaboradorDTO,colaboradorId);
-    }
-
-    /*public boolean colaboradorEs(Long colaboradorId , FormaDeColaborarEnum forma){
-        ColaboradorDTO colab = buscarXId(colaboradorId);
-        return colab.getFormas().contains(forma);
-    }*/
-
-    public void repararHeladera(Long colaboradorId , Long heladeraId){//revisar
+    public ColaboradorDTO repararHeladera(Long colaboradorId , Long heladeraId){//revisar
 
         if(colaboradorEs(colaboradorId , TECNICO)) {
             fachadaHeladeras.reparar(heladeraId);
-            añadirReparo(colaboradorId);
+            return añadirReparo(colaboradorId);
         }
         else throw new NoSuchElementException("El colaborador no es un TECNICO \n");
     }
@@ -105,11 +90,11 @@ public class Fachada {
         return colaboradorDTO.getFormas().contains(forma);
     }
 
-    public void añadirReparo(Long colaboradorId){
-        ColaboradorDTO colaboradorDTO = buscarXId(colaboradorId);
-        colaboradorRepository.remove(colaboradorId);
-        colaboradorDTO.incrementHeladerasReparadas();
-        agregarConID(colaboradorDTO,colaboradorId);
+    public ColaboradorDTO añadirReparo(Long colaboradorId){
+        Colaborador colaborador = colaboradorRepository.findById(colaboradorId);
+        colaborador.incrementHeladerasReparadas();
+        colaboradorRepository.update(colaborador);
+        return buscarXId(colaboradorId);
     }
 
     /*public ColaboradorDTO suscribirseMin(Long colaboradorId , Long min, Long heladeraId){
@@ -124,16 +109,9 @@ public class Fachada {
                                       Double heladerasReparadas){
         pesosDonadosPeso = pesosDonados;
         viandasDistribuidasPeso = viandasDistribuidas;
-        viandasDonadasPeso =viandasDonadas;
+        viandasDonadasPeso = viandasDonadas;
         heladerasReparadasPeso = heladerasReparadas;
     }
-
-    public Double puntos(Long colaboradorId){
-        return viandasDistribuidas(colaboradorId,10,2024) * viandasDistribuidasPeso +
-                viandasDonadas(colaboradorId ,10,2024) * viandasDonadasPeso
-                /* + pesosDonados(colaboradorId) * pesosDonadosPeso +
-                heladerasReparadas(colaboradorId) * heladerasReparadasPeso*/
-                ;}
 
     public Double puntosAnioMes(Long colaboradorId, Integer mes, Integer anio){
         return viandasDistribuidas(colaboradorId,mes,anio) * viandasDistribuidasPeso +
@@ -151,11 +129,11 @@ public class Fachada {
         return (traslados != null) ? (long) traslados.size() : 0L;
     }
     public Long pesosDonados(Long colaboradorId){
-        return (long) buscarXId(colaboradorId).getValorDonaciones();
+        return (long) colaboradorRepository.findById(colaboradorId).getValorDonaciones();
     }
 
     public Long heladerasReparadas(Long colaboradorId){
-        return buscarXId(colaboradorId).getHeladerasReparadas();
+        return colaboradorRepository.findById(colaboradorId).getHeladerasReparadas();
     }
 
     public void notificarIncidente(AlertaDTO alerta){
