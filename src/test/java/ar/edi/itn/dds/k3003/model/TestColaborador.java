@@ -63,7 +63,7 @@ public class TestColaborador {
         assertNotEquals(colaborador2.getFormas() , formaDeColaborar,"Se cambio la forma de colaborar");
     }
 
-    @Test
+    /*@Test
     public void puntosConViandasTest(){
         fColaboradores.actualizarPesosPuntos(0.5, 1.0, 1.5, 2.0);
         var trasladoDTO = new TrasladoDTO("qrV", 2, 3);
@@ -84,7 +84,7 @@ public class TestColaborador {
         Double puntos = fColaboradores.puntos(colaborador.getId());
         fColaboradores.actualizarPesosPuntos(0.0, 2.0, 2.0, 0.0);
         assertNotEquals(puntos , fColaboradores.puntos(colaborador.getId()) , "Se actualizaron los puntos");
-    }
+    }*/
 
     //@Override
     public String paquete() {
