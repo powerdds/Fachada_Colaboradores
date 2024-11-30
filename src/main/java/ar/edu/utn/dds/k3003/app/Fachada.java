@@ -116,7 +116,7 @@ public class Fachada {
     public Double puntosAnioMes(Long colaboradorId, Integer mes, Integer anio){
         return viandasDistribuidas(colaboradorId,mes,anio) * viandasDistribuidasPeso +
                 viandasDonadas(colaboradorId,mes,anio) * viandasDonadasPeso
-                 + pesosDonados(colaboradorId) * pesosDonadosPeso +
+                + pesosDonados(colaboradorId) * pesosDonadosPeso +
                 heladerasReparadas(colaboradorId) * heladerasReparadasPeso
                 ;}
 
@@ -139,6 +139,11 @@ public class Fachada {
     public void notificarIncidente(AlertaDTO alerta){
         Incidente incidente = new Incidente(Long.valueOf(alerta.getHeladeraId()),alerta.getTipoAlerta());
         alerta.getColaboradoresId().forEach(id -> {notificador.alerta(incidente,buscarXId(Long.valueOf(id)));});
+    }
+
+    public void notificarTraslado(TrasladoDTO trasladoDTO){
+        ColaboradorDTO colaboradorDTO = buscarXId(trasladoDTO.getColaboradorId());
+        notificador.notiTraslado(colaboradorDTO , trasladoDTO.getId());
     }
 
     public void setLogisticaProxy(FachadaLogistica fachadaLogistica) {

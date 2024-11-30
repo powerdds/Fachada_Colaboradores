@@ -1,6 +1,7 @@
 package ar.edu.utn.dds.k3003.controller;
 
 import ar.edu.utn.dds.k3003.app.Fachada;
+import ar.edu.utn.dds.k3003.facades.dtos.TrasladoDTO;
 import ar.edu.utn.dds.k3003.model.DTOs.AlertaDTO;
 import ar.edu.utn.dds.k3003.model.DTOs.ColaboradorRtaDTO;
 import ar.edu.utn.dds.k3003.model.DTOs.DonacionDTO;
@@ -154,6 +155,18 @@ public class ColaboradorController {
             context.result("Se reportó correctamente");
         } catch (NoSuchElementException ex) {
             context.result("No se pudo reportar"); //ex.getLocalizedMessage());
+            context.status(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    public void asignarTraslado(Context context){
+        var traslado = context.bodyAsClass(TrasladoDTO.class);
+        try {
+            fachada.notificarTraslado(traslado);
+            context.status(HttpStatus.OK);
+            context.result("Se asignó correctamente");
+        } catch (NoSuchElementException ex) {
+            context.result("No se pudo asignar el traslado"); //ex.getLocalizedMessage());
             context.status(HttpStatus.NOT_ACCEPTABLE);
         }
     }

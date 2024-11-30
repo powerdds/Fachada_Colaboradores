@@ -143,6 +143,11 @@
       <version>1.2.11</version> <!-- O la versión más reciente -->
     </dependency>
 
+    <dependency>
+      <groupId>org.telegram</groupId>
+      <artifactId>telegrambots</artifactId>
+      <version>6.5.0</version>
+    </dependency>
   </dependencies>
 
   <repositories>
