@@ -13,17 +13,18 @@ import java.util.Optional;
 public class Notificar {
 
     public void alerta(Incidente incidente, ColaboradorDTO colaboradorDTO){ //ok
-        this.sendNotificationToColaborator(Math.toIntExact(colaboradorDTO.getId()), "la heladera " +
+        /*this.sendNotificationToColaborator(Math.toIntExact(colaboradorDTO.getId()), "la heladera " +
                 incidente.getHeladeraId() + " sufrió un incidente de tipo " +
-                incidente.getTipoIncidente() + "\n");
+                incidente.getTipoIncidente() + "\n");*/
 
     System.out.print("Se notifica al colaborador "+ colaboradorDTO.getId() + " que la heladera " +
         incidente.getHeladeraId() + " sufrió un incidente de tipo " + incidente.getTipoIncidente() + "\n");
     }
 
     public void notiTraslado(ColaboradorDTO colaboradorDTO , Long id){ //ok
-        this.sendNotificationToColaborator(Math.toIntExact(colaboradorDTO.getId()), "Fuiste asignado al traslado "
-                + id + "\n");
+       /* this.sendNotificationToColaborator(Math.toIntExact(colaboradorDTO.getId()), "Fuiste asignado al traslado "
+                + id + "\n");*/
+        System.out.print("Se notifica al colaborador "+ colaboradorDTO.getId() + " que el traslado " + id + " fue asignado" );
     }
 
     public void sendNotificationToColaborator(int colaboratorId, String message) {
