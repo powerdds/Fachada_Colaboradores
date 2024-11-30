@@ -38,10 +38,6 @@ public class Fachada {
         this.colaboradorRepository = new ColaboradorRepository(entityManagerFactory);
         this.colaboradorMapper = new ColaboradorMapper();
         this.notificador = new Notificar();
-        this.pesosDonadosPeso = 0.0;
-        this.viandasDistribuidasPeso= 0.0;
-        this.viandasDonadasPeso= 0.0;
-        this.heladerasReparadasPeso= 0.0;
     }
 
     public ColaboradorDTO agregar(ColaboradorDTO colaboradorDto) {
