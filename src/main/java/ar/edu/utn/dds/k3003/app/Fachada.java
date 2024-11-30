@@ -118,10 +118,9 @@ public class Fachada {
     }
 
     public Double puntosAnioMes(Long colaboradorId, Integer mes, Integer anio){
-        return /*viandasDistribuidas(colaboradorId,mes,anio) * viandasDistribuidasPeso +
+        return viandasDistribuidas(colaboradorId,mes,anio) * viandasDistribuidasPeso +
                 viandasDonadas(colaboradorId,mes,anio) * viandasDonadasPeso
-                + */
-                pesosDonados(colaboradorId) * pesosDonadosPeso +
+                + pesosDonados(colaboradorId) * pesosDonadosPeso +
                 heladerasReparadas(colaboradorId) * heladerasReparadasPeso
                 ;}
 
