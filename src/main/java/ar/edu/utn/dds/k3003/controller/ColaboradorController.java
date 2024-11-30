@@ -197,7 +197,7 @@ public class ColaboradorController {
                 registry.config().commonTags("app", "metrics-colaborador");
                 colaboradoresPuntos.add(id);
             }
-            context.result("Puntos del colaborador " + id + " :" + puntosColaborador );
+            context.json(puntosColaborador);
             context.status(HttpStatus.OK);
         } catch (NoSuchElementException ex) {
             context.result("No se pudieron obtener los puntos del colaborador " + ex.getLocalizedMessage());
