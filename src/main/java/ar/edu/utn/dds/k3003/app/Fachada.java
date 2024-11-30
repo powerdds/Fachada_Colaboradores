@@ -141,8 +141,8 @@ public class Fachada {
         alerta.getColaboradoresId().forEach(id -> {notificador.alerta(incidente,buscarXId(Long.valueOf(id)));});
     }
 
-    public void notificarTraslado(TrasladoDTO trasladoDTO){
-        ColaboradorDTO colaboradorDTO = buscarXId(trasladoDTO.getColaboradorId());
+    public void notificarTraslado(Long colaboradorId , TrasladoDTO trasladoDTO){
+        ColaboradorDTO colaboradorDTO = buscarXId(colaboradorId);
         notificador.notiTraslado(colaboradorDTO , trasladoDTO.getId());
     }
 

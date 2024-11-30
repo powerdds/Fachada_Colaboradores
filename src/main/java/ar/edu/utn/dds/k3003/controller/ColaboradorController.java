@@ -160,9 +160,10 @@ public class ColaboradorController {
     }
 
     public void asignarTraslado(Context context){
+        var id = context.pathParamAsClass("id", Long.class).get();
         var traslado = context.bodyAsClass(TrasladoDTO.class);
         try {
-            fachada.notificarTraslado(traslado);
+            fachada.notificarTraslado(id ,traslado);
             context.status(HttpStatus.OK);
             context.result("Se asignó correctamente");
         } catch (NoSuchElementException ex) {

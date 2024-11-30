@@ -100,7 +100,7 @@ public class WebApp {
             app.get("/", context -> {context.result("Bienvenido al módulo de Colaboradores!"); } );
             app.post("/colaboradores", colaboradorController::agregar);
             app.post("/colaboradores/reportarIncidente", colaboradorController::reportar);
-            app.post("/colaboradores/asignarTraslado", colaboradorController::asignarTraslado);
+            app.post("/colaboradores/{id}/asignarTraslado", colaboradorController::asignarTraslado);
             app.get("/colaboradores", colaboradorController::obtenerColaboradores);
             app.get("/colaboradores/donaciones", colaboradorController::obtenerDonaciones);
             app.post("/colaboradores/prueba", colaboradorController::prueba);
